@@ -1,5 +1,6 @@
 #include<stdio.h>
+#include "periodicos.h"
 
-int addPeriod (Periodico p) {
+int addPeriod (periodico p) {
 
 }

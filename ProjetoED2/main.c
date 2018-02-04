@@ -2,12 +2,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
+#include "arvore.h"
+
+void pausaLinux () {
+  printf("\nPressione ENTER \n");
+  getchar();
+}
 
 int main(){
-char opcao='w';
 
-for (;;) {
+  char opcao='w';
+  int issn;
+  tavl indice;
+
+  criar(&indice);
+
+  for (;;) {
     while (!strchr("ipacxels", opcao)) {
+             printf("\e[H\e[2J");
              system("cls");
              printf("Indexação de periódicos v1.1\n");
              printf("=====================================\n");
@@ -29,36 +42,51 @@ for (;;) {
     switch (opcao) {
         case 'i': {
             printf("Funçao (i) menu ok");
+            pausaLinux ();
             system("pause");
             break;
         }
         case 'p': {
-            printf("Funçao (p) menu ok");
+            vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibir(indice);
+            pausaLinux ();
             system("pause");
             break;
         }
         case 'a': {
-            printf("Funçao (a) menu ok");
+            printf("Favor informar um ISSN que deseja acrescentar na base: ");
+            scanf("%d",&issn);
+            if (!busca (indice, issn)) {
+              (inserir(&indice, issn)) ? printf("Valor %d adicionado com sucesso!!!\n",issn) : printf("Erro ao adicionar\n");
+            }else{
+              printf("ISSN não pode ser inserido: Já existente na base!\n");
+            }
+            getchar();
+            pausaLinux ();
             system("pause");
             break;
         }
         case 'c': {
             printf("Funçao (c) menu ok");
+            pausaLinux ();
             system("pause");
             break;
         }
         case 'x': {
             printf("Funçao (x) menu ok");
+            pausaLinux ();
             system("pause");
             break;
         }
         case 'e': {
-            printf("Funçao (e) menu ok");
+            esvaziar(&indice);
+            printf("Todos os periódicos eliminados com sucesso!!!!\n");
+            pausaLinux ();
             system("pause");
             break;
         }
         case 'l': {
             printf("Funçao (l) menu ok");
+            pausaLinux ();
             system("pause");
             break;
         }
