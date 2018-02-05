@@ -30,3 +30,4 @@ void caso1(tavl *T);
 void caso2(tavl *T);
 int inserir(tavl *T, telem item);
 int altura ( tavl T);
+tavl remover(tavl *T, int info);

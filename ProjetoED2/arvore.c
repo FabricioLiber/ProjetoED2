@@ -263,3 +263,39 @@ int altura ( tavl T ){    /*retorna a altura da arvore*/
     else
         return dir + 1;
 }
+
+tavl remover(tavl *T, int info){
+	if((*T) == NULL){
+		return NULL;
+	}else{
+		if((*T)->info > info){
+			(*T)->esq = remover(&((*T)->esq), info);
+		}else if((*T)->info < info){
+			(*T)->dir = remover(&((*T)->dir), info);
+		}else{
+			if((*T)->esq == NULL && (*T)->dir == NULL){
+				tavl aux = (*T);
+				(*T) = NULL;
+				free(aux);
+			}else{
+				if((*T)->esq == NULL){
+					tavl aux = (*T);
+					(*T) = (*T)->dir;
+					free(aux);
+				}else if((*T)->dir == NULL){
+					tavl aux = (*T);
+					(*T) = (*T)->esq;
+					free(aux);
+				}else{
+					tavl aux = (*T)->esq;
+					while(aux->dir != NULL){
+						aux = aux->dir;
+					}
+					(*T)->info = aux->info;
+					(*T)->esq = remover(&((*T)->esq), (*T)->info);
+				}
+			}
+		}
+	}
+	return (*T);
+}

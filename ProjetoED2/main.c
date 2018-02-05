@@ -74,10 +74,18 @@ int main(){
             break;
         }
         case 'x': {
-            printf("Funçao (x) menu ok");
-            pausaLinux ();
-            system("pause");
-            break;
+          printf("Favor informar um ISSN que deseja REMOVER da base: ");
+          scanf("%d",&issn);
+          if (busca (indice, issn)) {
+            (remover(&indice, issn));
+            printf("Valor %d REMOVIDO com sucesso!!!\n",issn);
+          }else{
+            printf("ISSN não pode ser removido: Não existente na base!\n");
+          }
+          getchar();
+          pausaLinux ();
+          system("pause");
+          break;
         }
         case 'e': {
             esvaziar(&indice);
