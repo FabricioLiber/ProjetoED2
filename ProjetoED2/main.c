@@ -47,7 +47,8 @@ int main(){
             break;
         }
         case 'p': {
-            vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibir(indice);
+            vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibirArvore(indice);
+            exibir(indice);
             pausaLinux ();
             system("pause");
             break;
@@ -56,7 +57,8 @@ int main(){
             printf("Favor informar um ISSN que deseja acrescentar na base: ");
             scanf("%d",&issn);
             if (!busca (indice, issn)) {
-              (inserir(&indice, issn)) ? printf("Valor %d adicionado com sucesso!!!\n",issn) : printf("Erro ao adicionar\n");
+              (inserir(&indice, issn));
+              printf("Valor %d adicionado com sucesso!!!\n",issn);
             }else{
               printf("ISSN não pode ser inserido: Já existente na base!\n");
             }
