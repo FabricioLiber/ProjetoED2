@@ -30,6 +30,90 @@ void exibir (tavl T){
   }
 }
 
+void imprimirEspacos(int x){
+	for (int i = 0; i < x; ++i){
+		printf(" ");
+	}
+}
+
+int numeroDeEspacos(int x){
+	int j = 1;
+	for (int i = 0; i < x; ++i){
+		j = j*2;
+	}
+	j--;
+	return j;
+}
+
+int pw(int x, int y){
+	if(y == 0){
+		return 1;
+	}
+	int r = 1;
+	for (int i = 0; i < y; ++i){
+		r = r * x;
+	}
+	return r;
+}
+
+void imprimirNivel(tavl T, int nivel, int n){
+	if (nivel == 0){
+		imprimirEspacos(n);
+		if(T != NULL){
+        	printf("%d", T->info);
+    	}else{
+        	printf("-");
+    	}
+		imprimirEspacos(n);
+    }
+    else{
+    	if(T == NULL){
+    		imprimirNivel(NULL, nivel - 1, n);
+    	}else{
+	        imprimirNivel(T->esq, nivel - 1, n);
+    	}
+        printf(" ");
+        if(T == NULL){
+	        imprimirNivel(NULL, nivel - 1, n);
+        }else{
+        	imprimirNivel(T->dir, nivel - 1, n);
+        }
+    }
+}
+
+void exibirArvore(tavl T){
+	if(T == NULL){
+		printf("Árvore vazia\n");
+		return;
+	}
+    int i;
+    int height = altura(T);
+    for(i = 0; i < height; i++){
+    	int n = numeroDeEspacos(height-i);
+    	int t = numeroDeEspacos(height-i-1);
+        imprimirNivel(T, i, n);
+    	printf(" ");
+        printf("\n");
+
+        for (int j = 0; j < t; j++){
+        	int pw1 = pw(2,i);
+        	for (int k = 0; k < pw1; ++k){
+	        	imprimirEspacos(n-j-1);
+	        	printf("/");
+	        	imprimirEspacos(j);
+	        	imprimirEspacos(1);
+	        	imprimirEspacos(j);
+	        	printf("\\");
+	        	imprimirEspacos(n-j-1);
+        		printf(" ");
+
+        	}
+        	printf("\n");
+        }
+    }
+	printf("\n");
+}
+
 void esvaziar(tavl *T){
   if (*T == NULL) return;
   esvaziar(&(*T)->esq);
@@ -164,4 +248,18 @@ int inserir(tavl *T, telem item){
     else
       ok = 0;
     return ok;
+}
+
+int altura ( tavl T ){    /*retorna a altura da arvore*/
+    int esq, dir;
+
+    if ( T == NULL ) return 0;
+
+    esq = altura ( T->esq );
+    dir = altura ( T->dir );
+
+    if ( esq > dir )
+        return esq + 1;
+    else
+        return dir + 1;
 }
