@@ -41,7 +41,11 @@ int main(){
 
     switch (opcao) {
         case 'i': {
-            printf("Funçao (i) menu ok");
+            printf("Favor informar um ISSN que deseja acrescentar na base: ");
+            scanf("%d",&issn);
+            tavl temp = busca(indice, issn);
+            printf("Valor %d adicionado com sucesso!!!\n",temp->bal);
+            getchar();
             pausaLinux ();
             system("pause");
             break;
@@ -77,7 +81,7 @@ int main(){
           printf("Favor informar um ISSN que deseja REMOVER da base: ");
           scanf("%d",&issn);
           if (busca (indice, issn)) {
-            (remover(&indice, issn));
+            removerBalanceado(&indice, issn);
             printf("Valor %d REMOVIDO com sucesso!!!\n",issn);
           }else{
             printf("ISSN não pode ser removido: Não existente na base!\n");

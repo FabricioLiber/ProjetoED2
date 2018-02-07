@@ -203,7 +203,7 @@ void caso2(tavl *T){
   (*T)->bal = 0;
 }
 
-int inserir(tavl *T, telem item){
+int inserir(tavl *T, telem item, telem endereco){
 
   int ok;
   if (*T == NULL) {
@@ -298,4 +298,31 @@ tavl remover(tavl *T, int info){
 		}
 	}
 	return (*T);
+}
+
+tavl balRemove (tavl *T) {
+  if((*T) == NULL){
+		return NULL;
+	}else{
+    (*T)->bal = altura((*T)->dir)-altura((*T)->esq);
+    balRemove (&(*T)->esq);
+    balRemove (&(*T)->dir);
+  }
+}
+
+void BalancRemove (tavl *T) {
+  if ((*T)->bal>1) {
+    caso2(&(*T));
+    balRemove (&(*T));
+  }
+  if ((*T)->bal<-1) {
+    caso1(&(*T));
+    balRemove (&(*T));
+  }
+}
+
+void removerBalanceado (tavl *T, int valor) {
+  remover(&(*T),valor);
+  balRemove(&(*T));
+  BalancRemove (&(*T));
 }
