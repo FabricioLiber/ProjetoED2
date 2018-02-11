@@ -12,7 +12,7 @@ void pausaLinux () {
 
 int main(){
 
-  char opcao='w';
+  char opcao='w', arquivo[100] = "";
   int issn,teste;
   tavl indice, enderecoArquivo;
 
@@ -48,29 +48,17 @@ int main(){
             printf("Valor %d adicionado com sucesso!!!\n",temp->bal);
             getchar();
             pausaLinux ();
-            system("pause");
             break;
         }
         case 'p': {
             printIndice(indice);
             pausaLinux ();
-            system("pause");
             break;
         }
         case 'a': {
-            printf("Favor informar um ISSN que deseja acrescentar na base: ");
-            scanf("%d",&issn);
-            printf("Favor informar o endereço desse ISSN no arquivo que deseja acrescentar na base: ");
-            scanf("%d",&teste);
-            if (!busca (indice, issn)) {
-              (inserir(&indice, issn, teste));
-              printf("Valor %d adicionado com sucesso!!!\n",issn);
-            }else{
-              printf("ISSN não pode ser inserido: Já existente na base!\n");
-            }
+            getPeriodicoManual (&indice, arquivo);
             getchar();
             pausaLinux ();
-            system("pause");
             break;
         }
         case 'c': {
@@ -84,7 +72,6 @@ int main(){
             }
             getchar();
             pausaLinux ();
-            system("pause");
             break;
           }
         case 'x': {
@@ -98,26 +85,22 @@ int main(){
           }
           getchar();
           pausaLinux ();
-          system("pause");
           break;
         }
         case 'e': {
             esvaziar(&indice);
             printf("Todos os periódicos eliminados com sucesso!!!!\n");
             pausaLinux ();
-            system("pause");
             break;
         }
         case 'f': {
             vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibirArvore(indice);
             pausaLinux ();
-            system("pause");
             break;
         }
         case 'l': {
             printf("Funçao (l) menu ok");
             pausaLinux ();
-            system("pause");
             break;
         }
         case 's': {

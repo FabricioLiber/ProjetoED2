@@ -1,11 +1,6 @@
 #include "arvore.h"
 #define TAM 51 /* Tamanho da string */
 
-// typedef struct {
-//     int issn; /* identificador �nico da publica��o seriada*/
-//     int localizacao;
-// } cIndice;
-
 typedef struct {
     int issn; /* identificador �nico da publica��o seriada*/
     char titulo[TAM]; /* titulo do periodico */
@@ -13,3 +8,4 @@ typedef struct {
 } periodico;
 
 int printIndice (tavl indice);
+int getPeriodicoManual (tavl *indice, char *arquivo);
