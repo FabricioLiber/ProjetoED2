@@ -9,9 +9,5 @@ int printIndice (tavl indice) {
   printf("|          ISSN         |               ENDEREÇO                        |\n");
   printf("+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
 
-  for (int i = 0; i < count; i++) {
-  printf("|       %10.d  |               %10.d             |\n", );
-  }
-
-
+  exibir(indice);
 }

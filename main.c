@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include "arvore.h"
+#include "periodicos.h"
 
 void pausaLinux () {
   printf("\nPressione ENTER \n");
@@ -52,8 +52,7 @@ int main(){
             break;
         }
         case 'p': {
-            vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibirArvore(indice);
-            exibir(indice);
+            printIndice(indice);
             pausaLinux ();
             system("pause");
             break;
@@ -111,7 +110,6 @@ int main(){
         }
         case 'f': {
             vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibirArvore(indice);
-            exibir(indice);
             pausaLinux ();
             system("pause");
             break;

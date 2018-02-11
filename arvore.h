@@ -1,5 +1,3 @@
-#include "periodicos.h"
-
 typedef int telem;
 
 typedef struct no {
