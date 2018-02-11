@@ -203,7 +203,7 @@ void caso2(tavl *T){
   (*T)->bal = 0;
 }
 
-int inserir(tavl *T, telem item, telem endereco){
+int inserir(tavl *T, telem item, telem end){
 
   int ok;
   if (*T == NULL) {
@@ -212,12 +212,13 @@ int inserir(tavl *T, telem item, telem endereco){
       (*T)->esq = NULL;
     (*T)->dir = NULL;
     (*T)->info = item;
+    (*T)->endereco = end;
     (*T)->bal = 0;
     return 1;
   }
 
   if ((*T)->info > item) { /* recursividade à esquerda */
-    ok = inserir (&((*T)->esq), item);
+    ok = inserir (&((*T)->esq), item, end);
   if (ok)
     switch ((*T)->bal) { /* próxima raiz a se verificar o FB */
       case 1 : (*T)->bal = 0; /* era mais alto à direita, fica com FB=0 */
@@ -232,7 +233,7 @@ int inserir(tavl *T, telem item, telem endereco){
   }
   else
     if ((*T)->info < item) { /* recursividade à direita */
-      ok = inserir (&((*T)->dir), item);
+      ok = inserir (&((*T)->dir), item, end);
     if (ok)
       switch ((*T)->bal) { /* próxima raiz a se verificar o FB */
         case -1: (*T)->bal = 0; /* era mais alto à esquerda, fica com FB=0 */
