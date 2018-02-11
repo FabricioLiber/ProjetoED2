@@ -13,19 +13,19 @@ int vazia (tavl T){
   return (T == NULL);
 }
 
-tavl busca(tavl T, telem dado){
+tavl busca(tavl T, int issn){
   if (T == NULL) return NULL;
-  if (T->info == dado) return T;
-  if (T->info > dado)
-    return busca(T->esq, dado);
+  if ((T->indice).issn == issn) return T;
+  if ((T->indice).issn > issn)
+    return busca(T->esq, issn);
   else
-    return busca(T->dir, dado);
+    return busca(T->dir, issn);
 }
 
 void exibir (tavl T){
   if (T != NULL) {
     exibir (T->esq);
-    printf ("%d ",T->info);
+    printf ("%d ",(T->indice).issn);
     exibir (T->dir);
   }
 }
@@ -60,7 +60,7 @@ void imprimirNivel(tavl T, int nivel, int n){
 	if (nivel == 0){
 		imprimirEspacos(n);
 		if(T != NULL){
-        	printf("%d", T->info);
+        	printf("%d", (T->indice).issn);
     	}else{
         	printf("-");
     	}
@@ -203,7 +203,7 @@ void caso2(tavl *T){
   (*T)->bal = 0;
 }
 
-int inserir(tavl *T, telem item, telem endereco){
+int inserir(tavl *T, int issn){
 
   int ok;
   if (*T == NULL) {
@@ -211,13 +211,13 @@ int inserir(tavl *T, telem item, telem endereco){
     if (*T == NULL) return 0;
       (*T)->esq = NULL;
     (*T)->dir = NULL;
-    (*T)->info = item;
+    ((*T)->indice).issn = issn;
     (*T)->bal = 0;
     return 1;
   }
 
-  if ((*T)->info > item) { /* recursividade à esquerda */
-    ok = inserir (&((*T)->esq), item);
+  if (((*T)->indice).issn > issn) { /* recursividade à esquerda */
+    ok = inserir (&((*T)->esq), issn);
   if (ok)
     switch ((*T)->bal) { /* próxima raiz a se verificar o FB */
       case 1 : (*T)->bal = 0; /* era mais alto à direita, fica com FB=0 */
@@ -231,8 +231,8 @@ int inserir(tavl *T, telem item, telem endereco){
       }
   }
   else
-    if ((*T)->info < item) { /* recursividade à direita */
-      ok = inserir (&((*T)->dir), item);
+    if (((*T)->indice).issn < issn) { /* recursividade à direita */
+      ok = inserir (&((*T)->dir), issn);
     if (ok)
       switch ((*T)->bal) { /* próxima raiz a se verificar o FB */
         case -1: (*T)->bal = 0; /* era mais alto à esquerda, fica com FB=0 */
@@ -268,9 +268,9 @@ tavl remover(tavl *T, int info){
 	if((*T) == NULL){
 		return NULL;
 	}else{
-		if((*T)->info > info){
+		if(((*T)->indice).issn > info){
 			(*T)->esq = remover(&((*T)->esq), info);
-		}else if((*T)->info < info){
+		}else if(((*T)->indice).issn < info){
 			(*T)->dir = remover(&((*T)->dir), info);
 		}else{
 			if((*T)->esq == NULL && (*T)->dir == NULL){
@@ -291,8 +291,8 @@ tavl remover(tavl *T, int info){
 					while(aux->dir != NULL){
 						aux = aux->dir;
 					}
-					(*T)->info = aux->info;
-					(*T)->esq = remover(&((*T)->esq), (*T)->info);
+					((*T)->indice).issn = (aux->indice).issn;
+					(*T)->esq = remover(&((*T)->esq), ((*T)->indice).issn);
 				}
 			}
 		}
