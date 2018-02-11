@@ -25,7 +25,7 @@ tavl busca(tavl T, int issn){
 void exibir (tavl T){
   if (T != NULL) {
     exibir (T->esq);
-    printf ("%d ",(T->indice).issn);
+    printf("|       %10.d  |               %10.d             |\n",T->info, T->endereco);
     exibir (T->dir);
   }
 }
