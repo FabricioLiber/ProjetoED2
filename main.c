@@ -18,9 +18,10 @@ int main(){
   tavl indice, enderecoArquivo;
 
   criar(&indice);
+  carregaIndice(ARQ_BINARIO, &indice);
 
   for (;;) {
-    while (!strchr("ipacxelfs", opcao)) {
+    while (!strchr("ipacxelofs", opcao)) {
              printf("\e[H\e[2J");
              system("cls");
              printf("Indexação de periódicos v1.0\n");
@@ -32,6 +33,7 @@ int main(){
              printf("(x) Excluir um períodico\n");
              printf("(e) Eliminar todos os períodos\n");
              printf("(l) Listar Dados\n");
+             printf("(o) Otimizar espaço em disco\n");
              printf("(f) Exibir Árvore do índice\n");
              printf("(s) Sair\n");
              printf("=====================================\n");
@@ -100,11 +102,18 @@ int main(){
             break;
         }
         case 'l': {
-            listar(ARQ_BINARIO);
+            listar(ARQ_BINARIO,indice);
+            pausaLinux ();
+            break;
+        }
+        case 'o': {
+            otimizar(ARQ_BINARIO,indice);
+            printf("Arquivo otimizado fisicamento com sucesso!!!!\n");
             pausaLinux ();
             break;
         }
         case 's': {
+            otimizar(ARQ_BINARIO,indice);
             return 0;
         }
     }

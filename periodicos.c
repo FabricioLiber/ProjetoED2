@@ -13,13 +13,19 @@ int printIndice (tavl indice) {
   exibir(indice);
 }
 
-void listar(char *arquivo){
+void listar(char *arquivo, tavl indice){
     periodico p;
     FILE *arq;
     arq = fopen(arquivo,"r");
     rewind(arq);
     while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
-        printf("\nissn %ld", p.issn);
+        if (busca (indice, p.issn)) {
+          printf("\n*************************************\n");
+          printf("\nISSN: %ld", p.issn);
+          printf("\nTítulo: %s", p.titulo);
+          printf("\nEstrato: %s", p.estrato);
+          printf("\n*************************************\n");
+        }
     }
 }
 
@@ -59,4 +65,39 @@ int getPeriodicoManual (tavl *indice, char *arquivo) {
   scanf("%s",p.estrato);
   pushPeriodico (indice, arquivo,p);
   return 1;
+}
+
+void otimizar(char *arquivo, tavl indice){
+    periodico p;
+    char arquivoTemp[10] = "temp.bin";
+    FILE *arq,*arqTemp;
+    arq = fopen(arquivo,"r");
+
+    if (arq) {
+      rewind(arq);
+      while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
+          if (busca (indice, p.issn)) {
+            arqTemp = fopen(arquivoTemp,"ab+");
+            fwrite(&p, sizeof(p), 1, arqTemp);
+            fclose(arqTemp);
+          }
+      }
+      fclose(arq);
+      remove(arquivo);
+      rename(arquivoTemp,arquivo);
+    }
+}
+
+void carregaIndice (char *arquivo, tavl *indice){
+    periodico p;
+    FILE *arq;
+    arq = fopen(arquivo,"r");
+    long int endereco;
+
+    if (arq) {
+      rewind(arq);
+      while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
+        inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
+      }
+    }
 }

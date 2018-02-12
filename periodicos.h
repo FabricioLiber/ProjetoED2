@@ -10,4 +10,6 @@ typedef struct {
 int printIndice (tavl indice);
 int pushPeriodico (tavl *indice, char *arquivo, periodico p);
 int getPeriodicoManual (tavl *indice, char *arquivo);
-void listar(char *arquivo);
+void listar(char *arquivo, tavl indice);
+void otimizar(char *arquivo, tavl indice);
+void carregaIndice (char *arquivo, tavl *indice);
