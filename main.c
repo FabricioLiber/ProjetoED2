@@ -13,7 +13,7 @@ void pausaLinux () {
 
 int main(){
 
-  char opcao='w';
+  char opcao='w', enderecoCSV[30];
   int issn,teste;
   tavl indice, enderecoArquivo;
 
@@ -45,10 +45,9 @@ int main(){
 
     switch (opcao) {
         case 'i': {
-            printf("Favor informar um ISSN que deseja acrescentar na base: ");
-            scanf("%d",&issn);
-            tavl temp = busca(indice, issn);
-            printf("Valor %d adicionado com sucesso!!!\n",temp->bal);
+            printf("Favor informar o endereço do arquivo CSV: ");
+            scanf("%s",enderecoCSV);
+            importarCSV (enderecoCSV,ARQ_BINARIO,&indice);
             getchar();
             pausaLinux ();
             break;

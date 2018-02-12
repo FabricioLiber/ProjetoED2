@@ -13,3 +13,4 @@ int getPeriodicoManual (tavl *indice, char *arquivo);
 void listar(char *arquivo, tavl indice);
 void otimizar(char *arquivo, tavl indice);
 void carregaIndice (char *arquivo, tavl *indice);
+void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice);

@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<string.h>
+#include <stdlib.h>
 #include "periodicos.h"
 
 int printIndice (tavl indice) {
@@ -14,9 +15,10 @@ int printIndice (tavl indice) {
 }
 
 void listar(char *arquivo, tavl indice){
-    periodico p;
-    FILE *arq;
-    arq = fopen(arquivo,"r");
+  periodico p;
+  FILE *arq;
+  arq = fopen(arquivo,"r");
+  if (arq) {
     rewind(arq);
     while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
         if (busca (indice, p.issn)) {
@@ -27,6 +29,9 @@ void listar(char *arquivo, tavl indice){
           printf("\n*************************************\n");
         }
     }
+  }else {
+    printf("Arquivo vazio\n");
+  }
 }
 
 int pushPeriodico (tavl *indice, char *arquivo, periodico p) {
@@ -44,7 +49,7 @@ int pushPeriodico (tavl *indice, char *arquivo, periodico p) {
     }
     if( arquivoInexistente ){
           if( fwrite(&p, sizeof(p), 1, arq) )
-              printf("Gravacao de %d periodicos realizada com sucesso!\n", 1);
+              printf("Gravacao do ISSN %d realizada com sucesso!\n", p.issn);
     inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
     fclose(arq);
     }
@@ -100,4 +105,28 @@ void carregaIndice (char *arquivo, tavl *indice){
         inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
       }
     }
+}
+
+void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice) {
+  FILE *import;
+  char r[20], temp[99];
+  char *pointer;
+  periodico p;
+
+  import = fopen(enderecoCSV,"r");
+
+  if (import) {
+    while(!feof(import)) {
+      fgets(r,100,import);
+      pointer = strtok(r,",");
+      strcpy(temp,pointer);
+      p.issn = atoi(temp);
+      pointer = strtok(NULL,",");
+      strcpy(p.titulo,pointer);
+      pointer = strtok(NULL,",");
+      strcpy(p.estrato,pointer);
+      pushPeriodico(indice,arquivo,p);
+    }
+    fclose(import);
+  }
 }

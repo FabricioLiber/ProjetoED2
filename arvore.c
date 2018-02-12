@@ -323,7 +323,15 @@ void BalancRemove (tavl *T) {
 }
 
 void removerBalanceado (tavl *T, int valor) {
-  remover(&(*T),valor);
-  balRemove(&(*T));
-  BalancRemove (&(*T));
+  tavl aux;
+
+  if((*T)->esq == NULL && (*T)->dir == NULL){
+    tavl aux = (*T);
+    (*T) = NULL;
+    free(aux);
+  }else {
+    remover(&(*T),valor);
+    balRemove(&(*T));
+    BalancRemove (&(*T));
+  }
 }
