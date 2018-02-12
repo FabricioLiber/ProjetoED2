@@ -16,7 +16,6 @@ int main(){
   char opcao='w';
   int issn,teste;
   tavl indice, enderecoArquivo;
-  FILE* arq;
 
   criar(&indice);
 
@@ -58,7 +57,7 @@ int main(){
             break;
         }
         case 'a': {
-            getPeriodicoManual (&indice, ARQ_BINARIO, arq);
+            getPeriodicoManual (&indice, ARQ_BINARIO);
             getchar();
             pausaLinux ();
             break;
@@ -101,7 +100,7 @@ int main(){
             break;
         }
         case 'l': {
-            listar(arq);
+            listar(ARQ_BINARIO);
             pausaLinux ();
             break;
         }
