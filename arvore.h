@@ -1,9 +1,12 @@
-typedef int telem;
+#include "periodicos.h"
+typedef struct {
+    int issn;
+    long int endereco;
+} telem;
 
 typedef struct no {
   struct no *esq;
-  telem info;
-  telem endereco;
+  telem indice;
   int bal;
   struct no *dir;
 } tno;
@@ -12,7 +15,7 @@ typedef tno *tavl;
 
 void criar (tavl *T);
 int vazia (tavl T);
-tavl busca(tavl T, telem dado);
+tavl busca(tavl T, int issn);
 void exibir (tavl T);
 void imprimirEspacos(int x);
 int numeroDeEspacos(int x);
@@ -26,7 +29,7 @@ void rot_esq (tavl *T);
 void rot_dir_esq (tavl *T);
 void caso1(tavl *T);
 void caso2(tavl *T);
-int inserir(tavl *T, telem item, telem end);
+int inserir(tavl *T, int issn);
 int altura ( tavl T);
 tavl remover(tavl *T, int info);
 tavl balRemove (tavl *T);
