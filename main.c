@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <time.h>
 #include "periodicos.h"
+#define ARQ_BINARIO "periodicos.bin"
 
 void pausaLinux () {
   printf("\nPressione ENTER \n");
