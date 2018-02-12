@@ -8,5 +8,6 @@ typedef struct {
 } periodico;
 
 int printIndice (tavl indice);
-int pushPeriodico (tavl *indice, char *arquivo, periodico p);
-int getPeriodicoManual (tavl *indice, char *arquivo);
+int pushPeriodico (tavl *indice, char *arquivo,FILE* arq, periodico p);
+int getPeriodicoManual (tavl *indice, char *arquivo, FILE* arq);
+void listar(FILE *arq);

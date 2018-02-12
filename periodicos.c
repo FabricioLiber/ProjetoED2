@@ -13,10 +13,17 @@ int printIndice (tavl indice) {
   exibir(indice);
 }
 
-int pushPeriodico (tavl *indice, char *arquivo, periodico p) {
+void listar(FILE *arq){
+    periodico p;
+    rewind(arq);
+    while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
+        printf("\nissn %ld", p.issn);
+    }
+}
+
+int pushPeriodico (tavl *indice, char *arquivo,FILE* arq, periodico p) {
   int arquivoInexistente = 0;
   long int endereco;
-  FILE* arq;
 
   if (!busca (*indice, p.issn)) {
     if((arq=fopen(arquivo,"rb+"))==NULL){
@@ -30,6 +37,7 @@ int pushPeriodico (tavl *indice, char *arquivo, periodico p) {
           if( fwrite(&p, sizeof(p), 1, arq) )
               printf("Gravacao de %d periodicos realizada com sucesso!\n", 1);
     inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
+    printf("%d endereco\n",endereco);
     }
   }else{
     printf("ISSN %d não pode ser inserido: Já existente na base!\n", p.issn);
@@ -37,7 +45,7 @@ int pushPeriodico (tavl *indice, char *arquivo, periodico p) {
   return 1;
 }
 
-int getPeriodicoManual (tavl *indice, char *arquivo) {
+int getPeriodicoManual (tavl *indice, char *arquivo, FILE* arq) {
   periodico p;
 
   printf("Favor informar um ISSN que deseja acrescentar na base: ");
@@ -46,9 +54,6 @@ int getPeriodicoManual (tavl *indice, char *arquivo) {
   scanf("%s",p.titulo);
   printf("Favor informar o estrato desse períodico que deseja acrescentar na base: ");
   scanf("%s",p.estrato);
-  pushPeriodico (indice, arquivo, p);
-  printf("\nTESTE \n");
-  getchar();
-
+  pushPeriodico (indice, arquivo,arq, p);
   return 1;
 }

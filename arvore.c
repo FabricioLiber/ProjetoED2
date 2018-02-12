@@ -25,7 +25,7 @@ tavl busca(tavl T, telem dado){
 void exibir (tavl T){
   if (T != NULL) {
     exibir (T->esq);
-    printf("|       %10.d  |               %10.d             |\n",T->info, T->endereco);
+    printf("|       %10.d  |               %d             |\n",T->info, T->endereco);
     exibir (T->dir);
   }
 }
@@ -203,7 +203,7 @@ void caso2(tavl *T){
   (*T)->bal = 0;
 }
 
-int inserir(tavl *T, telem item, telem end){
+int inserir(tavl *T, telem item, long int end){
 
   int ok;
   if (*T == NULL) {

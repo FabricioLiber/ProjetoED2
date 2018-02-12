@@ -13,9 +13,10 @@ void pausaLinux () {
 
 int main(){
 
-  char opcao='w', arquivo[100] = "";
+  char opcao='w';
   int issn,teste;
   tavl indice, enderecoArquivo;
+  FILE* arq;
 
   criar(&indice);
 
@@ -23,7 +24,7 @@ int main(){
     while (!strchr("ipacxelfs", opcao)) {
              printf("\e[H\e[2J");
              system("cls");
-             printf("Indexação de periódicos v1.1\n");
+             printf("Indexação de periódicos v1.0\n");
              printf("=====================================\n");
              printf("(i) Importar arquivo CSV\n");
              printf("(p) Exportar tabela de índice\n");
@@ -57,7 +58,7 @@ int main(){
             break;
         }
         case 'a': {
-            getPeriodicoManual (&indice, arquivo);
+            getPeriodicoManual (&indice, ARQ_BINARIO, arq);
             getchar();
             pausaLinux ();
             break;
@@ -100,7 +101,7 @@ int main(){
             break;
         }
         case 'l': {
-            printf("Funçao (l) menu ok");
+            listar(arq);
             pausaLinux ();
             break;
         }
