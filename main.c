@@ -14,9 +14,10 @@ void pausaLinux () {
 
 int main(){
 
-  char opcao='w', enderecoCSV[30];
-  int issn,teste;
-  tavl indice, enderecoArquivo;
+  char opcao='w', enderecoCSV[30],issntxt[10];
+  int issn;
+  tavl indice;
+  periodico p;
 
   criar(&indice);
   carregaIndice(ARQ_BINARIO, &indice);
@@ -36,7 +37,7 @@ int main(){
              printf("(l) Listar Dados\n");
              printf("(o) Otimizar espaço em disco\n");
              printf("(f) Exibir Árvore do índice\n");
-             printf("(t) Exibir Tamanaho da Árvore do índice\n");
+             printf("(t) Exibir Altura da Árvore do índice\n");
              printf("(s) Sair\n");
              printf("=====================================\n");
              printf("Favor informar uma opcao valida:[ ]\b\b");
@@ -67,10 +68,11 @@ int main(){
         }
         case 'c': {
             printf("Favor informar um ISSN que deseja CONSULTAR na base: ");
-            scanf("%d",&issn);
-            enderecoArquivo =  busca (indice, issn);
-            if (enderecoArquivo) {
-              printf("Endereço no arquivo %d  com sucesso!!!\n",enderecoArquivo->endereco);
+            scanf("%s",issntxt);
+            issn = validaISSN(issntxt);
+            p = consultaPeriodico(indice,ARQ_BINARIO,issn);
+            if (p.issn) {
+              imprimePeriodico(p);
             }else{
               printf("ISSN não pode ser CONSULTADO: Não existente na base!\n");
             }
@@ -80,7 +82,8 @@ int main(){
           }
         case 'x': {
           printf("Favor informar um ISSN que deseja REMOVER da base: ");
-          scanf("%d",&issn);
+          scanf("%s",issntxt);
+          issn = validaISSN(issntxt);
           if (busca (indice, issn)) {
             removerBalanceado(&indice, issn);
             printf("Valor %d REMOVIDO com sucesso!!!\n",issn);
@@ -114,8 +117,8 @@ int main(){
             break;
         }
         case 't': {
-            printf("Lado esquerdo: %d\n",altura(indice->esq));
-            printf("Lado direito: %d\n",altura(indice->dir));
+            printf("Altura lado esquerdo: %d\n",altura(indice->esq));
+            printf("Altura lado direito: %d\n",altura(indice->dir));
             pausaLinux ();
             break;
         }
