@@ -12,8 +12,8 @@ typedef tno *tavl;
 
 void criar (tavl *T);
 int vazia (tavl T);
+void exibirOrdemCrescente (tavl T);
 tavl busca(tavl T, telem dado);
-void exibir (tavl T);
 void imprimirEspacos(int x);
 int numeroDeEspacos(int x);
 int pw(int x, int y);

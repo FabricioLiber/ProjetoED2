@@ -3,15 +3,34 @@
 #include <stdlib.h>
 #include "periodicos.h"
 
-int printIndice (tavl indice) {
+void exibir (tavl T, char *arquivotxt){
+  FILE *arq;
 
-  printf("+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
-  printf("|                    .::Tabela de índice::.                             |\n");
-  printf("+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
-  printf("|          ISSN         |               ENDEREÇO                        |\n");
-  printf("+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
 
-  exibir(indice);
+  if (T != NULL) {
+    exibir (T->esq, arquivotxt);
+    arq=fopen(arquivotxt,"a+");
+    fprintf(arq,"|       %10.d  |               %d             |\n",T->info, T->endereco);
+    fclose(arq);
+    exibir (T->dir, arquivotxt);
+  }
+}
+
+int printIndice (tavl indice, char *arquivotxt) {
+  FILE *arq;
+
+  arq=fopen(arquivotxt,"w+");
+
+  fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
+  fprintf(arq,"|                    .::Tabela de índice::.                             |\n");
+  fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
+  fprintf(arq,"|          ISSN         |               ENDEREÇO                        |\n");
+  fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
+
+  fclose(arq);
+  exibir(indice,arquivotxt);
+  exibirOrdemCrescente(indice);
+  printf("Arquivo de índice salvo em %s\n",arquivotxt);
 }
 
 void listar(char *arquivo, tavl indice){
@@ -109,15 +128,14 @@ void carregaIndice (char *arquivo, tavl *indice){
 
 void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice) {
   FILE *import;
-  char r[20], temp[99];
+  char r[99], temp[99];
   char *pointer;
   periodico p;
 
   import = fopen(enderecoCSV,"r");
 
   if (import) {
-    while(!feof(import)) {
-      fgets(r,100,import);
+    while(fgets(r, 100, import) != NULL) {
       pointer = strtok(r,",");
       strcpy(temp,pointer);
       p.issn = atoi(temp);

@@ -5,6 +5,7 @@
 #include <time.h>
 #include "periodicos.h"
 #define ARQ_BINARIO "periodicos.bin"
+#define ARQ_EXPORT_INDICE "indice.txt"
 
 void pausaLinux () {
   printf("\nPressione ENTER \n");
@@ -21,7 +22,7 @@ int main(){
   carregaIndice(ARQ_BINARIO, &indice);
 
   for (;;) {
-    while (!strchr("ipacxelofs", opcao)) {
+    while (!strchr("ipacxelofts", opcao)) {
              printf("\e[H\e[2J");
              system("cls");
              printf("Indexação de periódicos v1.0\n");
@@ -35,6 +36,7 @@ int main(){
              printf("(l) Listar Dados\n");
              printf("(o) Otimizar espaço em disco\n");
              printf("(f) Exibir Árvore do índice\n");
+             printf("(t) Exibir Tamanaho da Árvore do índice\n");
              printf("(s) Sair\n");
              printf("=====================================\n");
              printf("Favor informar uma opcao valida:[ ]\b\b");
@@ -53,7 +55,7 @@ int main(){
             break;
         }
         case 'p': {
-            printIndice(indice);
+            printIndice(indice, ARQ_EXPORT_INDICE);
             pausaLinux ();
             break;
         }
@@ -108,6 +110,12 @@ int main(){
         case 'o': {
             otimizar(ARQ_BINARIO,indice);
             printf("Arquivo otimizado fisicamento com sucesso!!!!\n");
+            pausaLinux ();
+            break;
+        }
+        case 't': {
+            printf("Lado esquerdo: %d\n",altura(indice->esq));
+            printf("Lado direito: %d\n",altura(indice->dir));
             pausaLinux ();
             break;
         }
