@@ -7,8 +7,8 @@ typedef struct {
     char estrato[3]; /* Estrato: A1, A2, B1, B2, B3, B4, B5, C */
 } periodico;
 
-void exibir (tavl T, char *arquivotxt, char *issntxt);
-int printIndice (tavl indice, char *arquivotxt) ;
+void exibir (tavl T, char *arquivotxt, char *issntxt, char *arquivobin);
+int printIndice (tavl indice, char *arquivotxt, char *arquivobin);
 int pushPeriodico (tavl *indice, char *arquivo, periodico p);
 int getPeriodicoManual (tavl *indice, char *arquivo);
 void imprimePeriodico (periodico p);

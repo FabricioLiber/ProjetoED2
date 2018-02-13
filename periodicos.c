@@ -4,21 +4,23 @@
 #include<ctype.h>
 #include "periodicos.h"
 
-void exibir (tavl T, char *arquivotxt, char *issntxt){
+void exibir (tavl T, char *arquivotxt, char *issntxt, char *arquivobin){
   FILE *arq;
   char issntxt2[10];
+  periodico p;
 
   if (T != NULL) {
-    exibir (T->esq, arquivotxt, issntxt);
+    exibir (T->esq, arquivotxt, issntxt, arquivobin);
     arq=fopen(arquivotxt,"a+");
+    p = consultaPeriodico (T,arquivobin,T->info);
     strcpy(issntxt2,converteStringIssn(T->info,issntxt2));
-    fprintf(arq,"|       %s  |               %d             |\n",issntxt2, T->endereco);
+    fprintf(arq,"|     %s         |            %s               |      %s     |\n",issntxt2, p.titulo,p.estrato);
     fclose(arq);
-    exibir (T->dir, arquivotxt, issntxt);
+    exibir (T->dir, arquivotxt, issntxt, arquivobin);
   }
 }
 
-int printIndice (tavl indice, char *arquivotxt) {
+int printIndice (tavl indice, char *arquivotxt, char *arquivobin) {
   FILE *arq;
   char issntxt[10];
 
@@ -27,11 +29,11 @@ int printIndice (tavl indice, char *arquivotxt) {
   fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
   fprintf(arq,"|                    .::Tabela de índice::.                             |\n");
   fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
-  fprintf(arq,"|          ISSN         |               ENDEREÇO                        |\n");
+  fprintf(arq,"|       ISSN            |          TÍTULO             |    ESTRATO      |\n");
   fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
 
   fclose(arq);
-  exibir(indice,arquivotxt, issntxt);
+  exibir(indice,arquivotxt, issntxt,arquivobin);
   printf("Arquivo de índice salvo em %s\n",arquivotxt);
 }
 

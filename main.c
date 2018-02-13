@@ -56,7 +56,7 @@ int main(){
             break;
         }
         case 'p': {
-            printIndice(indice, ARQ_EXPORT_INDICE);
+            printIndice(indice, ARQ_EXPORT_INDICE, ARQ_BINARIO);
             pausaLinux ();
             break;
         }
