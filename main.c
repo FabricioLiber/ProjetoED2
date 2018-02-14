@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
 #include "periodicos.h"
@@ -120,14 +120,19 @@ int main(){
             break;
         }
         case 't': {
-            printf("Altura lado esquerdo: %d\n",altura(indice->esq));
-            printf("Altura lado direito: %d\n",altura(indice->dir));
+            if(!vazia(indice)) {
+              printf("Altura lado esquerdo: %d\n",altura(indice->esq));
+              printf("Altura lado direito: %d\n",altura(indice->dir));
+            }else{
+              printf("Indice Vazio\n");
+            }
             pausaLinux ();
             break;
         }
         case 's': {
             otimizar(ARQ_BINARIO,indice);
             remove(ARQ_LOG);
+            remove(ARQ_EXPORT_INDICE);
             return 0;
         }
     }
