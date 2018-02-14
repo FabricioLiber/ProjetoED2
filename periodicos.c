@@ -79,24 +79,23 @@ int pushPeriodico (tavl *indice, char *arquivo, periodico p) {
     }
     if( arquivoInexistente ){
           if( fwrite(&p, sizeof(p), 1, arq) )
-              printf("Gravacao do ISSN %d realizada com sucesso!\n", p.issn);
     inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
     fclose(arq);
     }
+    return 1;
   }else{
-    printf("ISSN %d não pode ser inserido: Já existente na base!\n", p.issn);
+    return 0;
   }
-  return 1;
 }
 
-int getPeriodicoManual (tavl *indice, char *arquivo) {
+int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog) {
   periodico p;
   char temp[100];
   int issn;
 
   printf("Favor informar um ISSN que deseja acrescentar na base: ");
   scanf("%s",temp);
-  issn = validaISSN(temp);
+  issn = validaISSN(temp,arquivolog);
   if (issn) {
     p.issn = issn;
     printf("Favor informar o título desse períodico que deseja acrescentar na base: ");
@@ -105,10 +104,17 @@ int getPeriodicoManual (tavl *indice, char *arquivo) {
     strcpy(p.titulo,temp);
     printf("Favor informar o estrato desse períodico que deseja acrescentar na base: ");
     scanf("%s",p.estrato);
-    pushPeriodico (indice, arquivo,p);
-    return 1;
+    if (pushPeriodico (indice, arquivo,p)){
+      printf("Gravacao do ISSN %d realizada com sucesso!\n", p.issn);
+      return 1;
+    }else {
+      printf("ISSN %d não pode ser inserido: Já existente na base!\n", p.issn);
+      return 0;
+    }
   }else {
-    return issn;
+    printf("Favor informar o ISSN em um formato aceito: ");
+    printf("O ISSN é composto por oito dígitos distribuídos em dois grupos de quatro dígitos cada, separados por um hífen. Exemplo: ISSN 1018-4783.\n");
+    return 0;
   }
 }
 
@@ -147,11 +153,11 @@ void carregaIndice (char *arquivo, tavl *indice){
     }
 }
 
-void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice) {
+void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog) {
   FILE *import;
   char r[99], temp[99];
   char *pointer;
-  int issnValido;
+  int issnValido,j=0,i=0;
   periodico p;
 
   import = fopen(enderecoCSV,"r");
@@ -160,20 +166,26 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice) {
     while(fgets(r, 100, import) != NULL) {
       pointer = strtok(r,",");
       strcpy(temp,pointer);
-      issnValido = validaISSN(temp);
+      issnValido = validaISSN(temp,arquivolog);
       if (issnValido) {
         p.issn = issnValido;
         pointer = strtok(NULL,",");
         strcpy(temp,pointer);
         strcpy(temp,validaTitulo(temp));
         strcpy(p.titulo,temp);
-        //if(temp[0]='"')pointer = strtok(NULL,",");
         pointer = strtok(NULL,",");
-        strcpy(p.estrato,pointer);
-        pushPeriodico(indice,arquivo,p);
+        strcpy(temp,pointer);
+        if (validaEstrato(p.issn,temp,arquivolog)){
+          strcpy(p.estrato,pointer);
+          pushPeriodico(indice,arquivo,p);
+          i++;
+        }
       }
+      j++;
     }
     fclose(import);
+    printf("Números de períodicos importados: %d\n", i);
+    printf("Números de períodicos com falha na importação: %d\n", j-1-i);
   }
 }
 
@@ -199,9 +211,10 @@ periodico consultaPeriodico (tavl indice, char *arquivo, int issn) {
   return p;
 }
 
-int validaISSN (char *issn) {
+int validaISSN (char *issn, char* arquivolog) {
   int i,j,tam,teste=1, numISSN;
   char temp[9];
+  FILE* arq;
 
   for (i = 0; i < strlen(issn); i++) {
     if (!isdigit(issn[i])&&i!=4) teste = 0;
@@ -218,9 +231,11 @@ int validaISSN (char *issn) {
     numISSN = atoi(temp);
     return numISSN;
   }else{
-    printf("ISSN %s não é valido\n",issn);
-    printf("Favor informar o ISSN em um formato aceito:\n");
-    printf("O ISSN é composto por oito dígitos distribuídos em dois grupos de quatro dígitos cada, separados por um hífen. Exemplo: ISSN 1018-4783.\n");
+    arq=fopen(arquivolog,"a+");
+    fprintf(arq,"ISSN %s não é valido.",issn);
+    fprintf(arq,"Favor informar o ISSN em um formato aceito: ");
+    fprintf(arq,"O ISSN é composto por oito dígitos distribuídos em dois grupos de quatro dígitos cada, separados por um hífen. Exemplo: ISSN 1018-4783.\n");
+    fclose(arq);
     return 0;
   }
 }
@@ -258,9 +273,8 @@ char* validaTitulo (char *titulo) {
   char temp[TAM];
 
   if (strlen(titulo)>TAM) {
-    indice = strchr(titulo,' ')-titulo;
-    strncpy(temp,titulo,indice+1);
-    strcat(temp,". truncado");
+    strncpy(temp,titulo,41);
+    strcat(temp," .trunc");
     strcpy(titulo,temp);
     return titulo;
   }else{
@@ -268,15 +282,15 @@ char* validaTitulo (char *titulo) {
   }
 }
 
-/*int validaEstrato (char *estrato) {
+int validaEstrato (int issn, char *estrato, char* arquivolog) {
+  FILE* arq;
 
   if (strlen(estrato)>3) {
-    indice = strchr(titulo,' ')-titulo;
-    strncpy(temp,titulo,indice+1);
-    temp[indice+2] = '.';
-    strcpy(titulo,temp);
-    return titulo;
+    arq=fopen(arquivolog,"a+");
+    fprintf(arq,"ISSN %d não importado, estrato inválido\n",issn);
+    fclose(arq);
+    return 0;
   }else{
-    return titulo;
+    return 1;
   }
-}*/
+}

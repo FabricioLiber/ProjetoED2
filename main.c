@@ -6,6 +6,8 @@
 #include "periodicos.h"
 #define ARQ_BINARIO "periodicos.bin"
 #define ARQ_EXPORT_INDICE "indice.txt"
+#define ARQ_LOG "log.txt"
+
 
 void pausaLinux () {
   printf("\nPressione ENTER \n");
@@ -50,7 +52,7 @@ int main(){
         case 'i': {
             printf("Favor informar o endereço do arquivo CSV: ");
             scanf("%s",enderecoCSV);
-            importarCSV (enderecoCSV,ARQ_BINARIO,&indice);
+            importarCSV (enderecoCSV,ARQ_BINARIO,&indice,ARQ_LOG);
             getchar();
             pausaLinux ();
             break;
@@ -61,7 +63,7 @@ int main(){
             break;
         }
         case 'a': {
-            getPeriodicoManual (&indice, ARQ_BINARIO);
+            getPeriodicoManual (&indice, ARQ_BINARIO, ARQ_LOG);
             getchar();
             pausaLinux ();
             break;
@@ -69,7 +71,7 @@ int main(){
         case 'c': {
             printf("Favor informar um ISSN que deseja CONSULTAR na base: ");
             scanf("%s",issntxt);
-            issn = validaISSN(issntxt);
+            issn = validaISSN(issntxt, ARQ_LOG);
             p = consultaPeriodico(indice,ARQ_BINARIO,issn);
             if (p.issn) {
               imprimePeriodico(p);
@@ -83,7 +85,7 @@ int main(){
         case 'x': {
           printf("Favor informar um ISSN que deseja REMOVER da base: ");
           scanf("%s",issntxt);
-          issn = validaISSN(issntxt);
+          issn = validaISSN(issntxt, ARQ_LOG);
           if (busca (indice, issn)) {
             removerBalanceado(&indice, issn);
             printf("Valor %d REMOVIDO com sucesso!!!\n",issn);
@@ -98,6 +100,7 @@ int main(){
             esvaziar(&indice);
             printf("Todos os periódicos eliminados com sucesso!!!!\n");
             pausaLinux ();
+            remove(ARQ_LOG);
             break;
         }
         case 'f': {
@@ -124,6 +127,7 @@ int main(){
         }
         case 's': {
             otimizar(ARQ_BINARIO,indice);
+            remove(ARQ_LOG);
             return 0;
         }
     }

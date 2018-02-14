@@ -10,13 +10,14 @@ typedef struct {
 void exibir (tavl T, char *arquivotxt, char *issntxt, char *arquivobin);
 int printIndice (tavl indice, char *arquivotxt, char *arquivobin);
 int pushPeriodico (tavl *indice, char *arquivo, periodico p);
-int getPeriodicoManual (tavl *indice, char *arquivo);
+int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog);
 void imprimePeriodico (periodico p);
 void listar(char *arquivo, tavl indice);
 void otimizar(char *arquivo, tavl indice);
 void carregaIndice (char *arquivo, tavl *indice);
-void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice);
+void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice,char* arquivolog);
 periodico consultaPeriodico (tavl indice, char *arquivo, int ISSN);
-int validaISSN (char *issn);
+int validaISSN (char *issn, char*arquivolog);
 char *  converteStringIssn (int issn, char * issntxt);
 char* validaTitulo (char *titulo);
+int validaEstrato (int issn,char *estrato, char* arquivolog);
