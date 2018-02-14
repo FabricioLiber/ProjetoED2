@@ -162,7 +162,7 @@ void carregaIndice (char *arquivo, tavl *indice){
 
 void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog) {
   FILE *import;
-  char r[145]="", temp[145]="";
+  char r[300]="", issn[10]="", titulo[200]="", estrato[50]="";
   char *pointer;
   int issnValido,j=0,i=0;
   periodico p;
@@ -170,28 +170,43 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
   import = fopen(enderecoCSV,"r");
 
   if (import) {
-    while(fgets(r, 151, import) != NULL) {
-      pointer = strtok(r,",");
-      strcpy(temp,pointer);
-      issnValido = validaISSN(temp,arquivolog);
-      if (issnValido) {
-        p.issn = issnValido;
-        pointer = strtok(NULL,",");
-        strcpy(temp,pointer);
-        strcpy(temp,validaTitulo(temp));
-        strcpy(p.titulo,temp);
-        pointer = strtok(NULL,",");
-        strcpy(temp,pointer);
-        if (validaEstrato(p.issn,temp,arquivolog)){
-          strcpy(p.estrato,temp);
-          pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
+    while(fgets(r, 300, import)!= NULL) {
+      if(!strchr(r,'"')){
+        pointer = strtok(r,",");
+        strcpy(issn,pointer);
+        issnValido = validaISSN(issn,arquivolog);
+        if (issnValido) {
+          p.issn = issnValido;
+          pointer = strtok(NULL,",");
+          strcpy(titulo,pointer);
+          validaTitulo(titulo);
+          strcpy(p.titulo,titulo);
+          pointer = strtok(NULL,",");
+          strcpy(estrato,pointer);
+          if (validaEstrato(p.issn,estrato,arquivolog)){
+            strcpy(p.estrato,estrato);
+            pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
+          }
+        }
+      }else {
+        excecaoString(r,issn,titulo,estrato);
+        issnValido = validaISSN(issn,arquivolog);
+        if (issnValido) {
+          p.issn = issnValido;
+          validaTitulo(titulo);
+          strcpy(p.titulo,titulo);
+          if (validaEstrato(p.issn,estrato,arquivolog)){
+            strcpy(p.estrato,estrato);
+            pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
+          }
         }
       }
       j++;
     }
-    fclose(import);
     printf("Números de períodicos importados: %d\n", i);
     printf("Números de períodicos com falha na importação: %d\n", j-1-i);
+    printf("Arquivo de log do sistema em: log.txt\n");    
+    fclose(import);
   }
 }
 
@@ -279,7 +294,7 @@ void converteStringIssn (int issn, char * issntxt){
    issntxt[j] = '-';
 }
 
-char* validaTitulo (char *titulo) {
+void validaTitulo (char *titulo) {
   int indice;
   char temp[TAM]="";
 
@@ -287,9 +302,6 @@ char* validaTitulo (char *titulo) {
     strncpy(temp,titulo,41);
     strcat(temp," .trunc");
     strcpy(titulo,temp);
-    return titulo;
-  }else{
-    return titulo;
   }
 }
 
@@ -318,4 +330,24 @@ void horaagora (char* hora) {
   timeinfo = localtime ( &rawtime );
 
   strcpy(hora,asctime(timeinfo));
+}
+
+void excecaoString (char *string, char *issn, char *titulo, char* estrato) {
+  int i,j,indice,tam;
+
+  tam = strlen(string);
+  indice= strrchr(string,'"')-string;
+  for (i=indice+2,j=0;i<=tam;i++,j++) {
+    estrato[j]=string[i];
+  }
+  estrato[j] = '\0';
+  string[indice+1] = '\0';
+  tam = strlen(string);
+  indice= strchr(string,'"')-string;
+  for (i=indice,j=0;i<=tam;i++,j++) {
+    titulo[j]=string[i];
+  }
+  titulo[j] = '\0';
+  string[indice-1] = '\0';
+  strcpy(issn,string);
 }
