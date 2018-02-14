@@ -91,16 +91,18 @@ int pushPeriodico (tavl *indice, char *arquivo, periodico p) {
 
 int getPeriodicoManual (tavl *indice, char *arquivo) {
   periodico p;
-  char issntxt[25];
+  char temp[100];
   int issn;
 
   printf("Favor informar um ISSN que deseja acrescentar na base: ");
-  scanf("%s",issntxt);
-  issn = validaISSN(issntxt);
+  scanf("%s",temp);
+  issn = validaISSN(temp);
   if (issn) {
     p.issn = issn;
     printf("Favor informar o título desse períodico que deseja acrescentar na base: ");
-    scanf("%s",p.titulo);
+    scanf("%s",temp);
+    validaTitulo(temp);
+    strcpy(p.titulo,temp);
     printf("Favor informar o estrato desse períodico que deseja acrescentar na base: ");
     scanf("%s",p.estrato);
     pushPeriodico (indice, arquivo,p);
@@ -162,7 +164,10 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice) {
       if (issnValido) {
         p.issn = issnValido;
         pointer = strtok(NULL,",");
-        strcpy(p.titulo,pointer);
+        strcpy(temp,pointer);
+        strcpy(temp,validaTitulo(temp));
+        strcpy(p.titulo,temp);
+        //if(temp[0]='"')pointer = strtok(NULL,",");
         pointer = strtok(NULL,",");
         strcpy(p.estrato,pointer);
         pushPeriodico(indice,arquivo,p);
@@ -197,7 +202,6 @@ periodico consultaPeriodico (tavl indice, char *arquivo, int issn) {
 int validaISSN (char *issn) {
   int i,j,tam,teste=1, numISSN;
   char temp[9];
-  char *pointer;
 
   for (i = 0; i < strlen(issn); i++) {
     if (!isdigit(issn[i])&&i!=4) teste = 0;
@@ -228,7 +232,6 @@ char *  converteStringIssn (int issn, char * issntxt){
     int i =0;
     while (issn > 0) {
         int digito = issn % 10;
-
         issntxt[i] = digito + '0';
         issn /= 10;
         i++;
@@ -249,3 +252,31 @@ char *  converteStringIssn (int issn, char * issntxt){
    issntxt[4] = '-';
    return issntxt;
 }
+
+char* validaTitulo (char *titulo) {
+  int indice;
+  char temp[TAM];
+
+  if (strlen(titulo)>TAM) {
+    indice = strchr(titulo,' ')-titulo;
+    strncpy(temp,titulo,indice+1);
+    strcat(temp,". truncado");
+    strcpy(titulo,temp);
+    return titulo;
+  }else{
+    return titulo;
+  }
+}
+
+/*int validaEstrato (char *estrato) {
+
+  if (strlen(estrato)>3) {
+    indice = strchr(titulo,' ')-titulo;
+    strncpy(temp,titulo,indice+1);
+    temp[indice+2] = '.';
+    strcpy(titulo,temp);
+    return titulo;
+  }else{
+    return titulo;
+  }
+}*/

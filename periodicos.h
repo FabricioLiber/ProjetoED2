@@ -19,3 +19,4 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice);
 periodico consultaPeriodico (tavl indice, char *arquivo, int ISSN);
 int validaISSN (char *issn);
 char *  converteStringIssn (int issn, char * issntxt);
+char* validaTitulo (char *titulo);
