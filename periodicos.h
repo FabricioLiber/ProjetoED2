@@ -8,15 +8,15 @@ typedef struct {
 } periodico;
 
 void exibir (tavl T, char *arquivotxt,char *arquivobin);
-int printIndice (tavl indice, char *arquivotxt, char *arquivobin);
-int pushPeriodico (tavl *indice, char *arquivo, periodico p, char *arquivolog);
-int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog);
+int printIndice (tavl avlIndice, char *arquivotxt, char *arquivobin);
+int pushPeriodico (tavl *avlIndice, char *arquivo, periodico p, char *arquivolog);
+int getPeriodicoManual (tavl *avlIndice, char *arquivo, char* arquivolog);
 void imprimePeriodico (periodico p);
-void listar(char *arquivo, tavl indice);
-void otimizar(char *arquivo, tavl indice);
-void carregaIndice (char *arquivo, tavl *indice);
-void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice,char* arquivolog);
-periodico consultaPeriodico (tavl indice, char *arquivo, int ISSN);
+void listar(char *arquivo, tavl avlIndice);
+void otimizar(char *arquivo, tavl avlIndice);
+void carregaIndice (char *arquivo, tavl *avlIndice);
+void importarCSV(char *enderecoCSV, char *arquivo,tavl *avlIndice,char* arquivolog);
+periodico consultaPeriodico (tavl avlIndice, char *arquivo, int ISSN);
 int validaISSN (char *issn, char*arquivolog);
 void converteStringIssn (int issn, char * issntxt);
 void validaTitulo (char *titulo);

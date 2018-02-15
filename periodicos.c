@@ -13,18 +13,18 @@ void exibir (tavl T, char *arquivotxt, char *arquivobin){
   if (T != NULL) {
     exibir (T->esq, arquivotxt, arquivobin);
     arq=fopen(arquivotxt,"a+");
-    p = consultaPeriodico (T,arquivobin,T->info);
-    converteStringIssn(T->info,issntxt2);
+    p = consultaPeriodico (T,arquivobin,(T->indice).issn);
+    converteStringIssn((T->indice).issn,issntxt2);
     fprintf(arq,"|     %s         |    %s    | %s |\n",issntxt2, p.titulo,p.estrato);
     fclose(arq);
     exibir (T->dir, arquivotxt, arquivobin);
   }
 }
 
-int printIndice (tavl indice, char *arquivotxt, char *arquivobin) {
+int printIndice (tavl avlIndice, char *arquivotxt, char *arquivobin) {
   FILE *arq;
 
-  otimizar(arquivobin,indice);//para que o arquivo fisico condiza com o indice que sera impresso
+  otimizar(arquivobin, avlIndice);//para que o arquivo fisico condiza com o indice que sera impresso
   arq=fopen(arquivotxt,"w+");
 
   fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
@@ -34,7 +34,7 @@ int printIndice (tavl indice, char *arquivotxt, char *arquivobin) {
   fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
 
   fclose(arq);
-  exibir(indice,arquivotxt,arquivobin);
+  exibir(avlIndice, arquivotxt, arquivobin);
   printf("Arquivo de índice salvo em %s\n",arquivotxt);
 }
 
@@ -49,14 +49,14 @@ void imprimePeriodico (periodico p){
   printf("\n*************************************\n");
 }
 
-void listar(char *arquivo, tavl indice){
+void listar(char *arquivo, tavl avlIndice){
   periodico p;
   FILE *arq;
   arq = fopen(arquivo,"r");
   if (arq) {
     rewind(arq);
     while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
-      if (busca (indice, p.issn)) {
+      if (busca (avlIndice, p.issn)) {
         imprimePeriodico(p);
       }
     }
@@ -65,14 +65,14 @@ void listar(char *arquivo, tavl indice){
   }
 }
 
-int pushPeriodico (tavl *indice, char *arquivo, periodico p, char* arquivolog) {
+int pushPeriodico (tavl *avlIndice, char *arquivo, periodico p, char* arquivolog) {
   int arquivoInexistente = 1;
   long int endereco;
   FILE* arq;
   char hora[25]="";
   horaagora(hora);
 
-  if (!busca (*indice, p.issn)) {
+  if (!busca (*avlIndice, p.issn)) {
     if((arq=fopen(arquivo,"ab+"))==NULL){
         arquivoInexistente = 0;
         if((arq=fopen(arquivo,"wb+"))==NULL){
@@ -82,7 +82,7 @@ int pushPeriodico (tavl *indice, char *arquivo, periodico p, char* arquivolog) {
     }
     if( arquivoInexistente ){
           if( fwrite(&p, sizeof(p), 1, arq) )
-    inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
+    inserir(avlIndice, p.issn, (endereco = ftell(arq))-sizeof(p));
     fclose(arq);
     //(arquivo,*indice);
     }
@@ -96,7 +96,7 @@ int pushPeriodico (tavl *indice, char *arquivo, periodico p, char* arquivolog) {
   }
 }
 
-int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog) {
+int getPeriodicoManual (tavl *avlIndice, char *arquivo, char* arquivolog) {
   periodico p;
   char temp[100]="";
   int issn;
@@ -112,7 +112,7 @@ int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog) {
     strcpy(p.titulo,temp);
     printf("Favor informar o estrato desse períodico que deseja acrescentar na base: ");
     scanf("%s",p.estrato);
-    if (pushPeriodico (indice, arquivo,p,arquivolog)){
+    if (pushPeriodico (avlIndice, arquivo,p,arquivolog)){
       printf("Gravacao do ISSN %d realizada com sucesso!\n", p.issn);
       return 1;
     }else {
@@ -126,16 +126,16 @@ int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog) {
   }
 }
 
-void otimizar(char *arquivo, tavl indice){
+void otimizar(char *arquivo, tavl avlIndice){
     periodico p;
     char arquivoTemp[10] = "temp.bin";
-    FILE *arq,*arqTemp;
+    FILE *arq, *arqTemp;
     arq = fopen(arquivo,"r");
 
     if (arq) {
       while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
-          if (busca (indice, p.issn)) {
-            arqTemp = fopen(arquivoTemp,"ab+");
+          if (busca (avlIndice, p.issn)) {
+            arqTemp = fopen(arquivoTemp, "ab+");
             fwrite(&p, sizeof(p), 1, arqTemp);
             fclose(arqTemp);
           }
@@ -146,7 +146,7 @@ void otimizar(char *arquivo, tavl indice){
     }
 }
 
-void carregaIndice (char *arquivo, tavl *indice){
+void carregaIndice (char *arquivo, tavl *avlIndice){
     periodico p;
     FILE *arq;
     arq = fopen(arquivo,"r");
@@ -155,12 +155,12 @@ void carregaIndice (char *arquivo, tavl *indice){
     if (arq) {
       rewind(arq);
       while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
-        inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
+        inserir(avlIndice, p.issn, (endereco = ftell(arq))-sizeof(p));
       }
     }
 }
 
-void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog) {
+void importarCSV(char *enderecoCSV, char *arquivo,tavl *avlIndice, char* arquivolog) {
   FILE *import;
   char r[300]="", issn[10]="", titulo[200]="", estrato[50]="";
   char *pointer;
@@ -182,22 +182,22 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
           validaTitulo(titulo);
           strcpy(p.titulo,titulo);
           pointer = strtok(NULL,",");
-          strcpy(estrato,pointer);
+          strcpy(estrato, pointer);
           if (validaEstrato(p.issn,estrato,arquivolog)){
             strcpy(p.estrato,estrato);
-            pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
+            pushPeriodico(avlIndice, arquivo,p, arquivolog) ? i++:j++;
           }
         }
       }else {
-        excecaoString(r,issn,titulo,estrato);
-        issnValido = validaISSN(issn,arquivolog);
+        excecaoString(r, issn, titulo, estrato);
+        issnValido = validaISSN(issn, arquivolog);
         if (issnValido) {
           p.issn = issnValido;
           validaTitulo(titulo);
           strcpy(p.titulo,titulo);
           if (validaEstrato(p.issn,estrato,arquivolog)){
             strcpy(p.estrato,estrato);
-            pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
+            pushPeriodico(avlIndice,arquivo,p,arquivolog) ? i++:j++;
           }
         }
       }
@@ -205,20 +205,20 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
     }
     printf("Números de períodicos importados: %d\n", i);
     printf("Números de períodicos com falha na importação: %d\n", j-1-i);
-    printf("Arquivo de log do sistema em: log.txt\n");    
+    printf("Arquivo de log do sistema em: log.txt\n");
     fclose(import);
   }
 }
 
-periodico consultaPeriodico (tavl indice, char *arquivo, int issn) {
+periodico consultaPeriodico (tavl avlIndice, char *arquivo, int issn) {
   periodico p;
   tavl indPeriodico;
   long int endereco;
   FILE *arq;
 
-  indPeriodico = busca(indice, issn);
+  indPeriodico = busca(avlIndice, issn);
   if (indPeriodico != NULL) {
-    endereco = indPeriodico->endereco;
+    endereco = (indPeriodico->indice).endereco;
 
     arq = fopen(arquivo,"r");
 

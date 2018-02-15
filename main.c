@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <ctype.h> // Utilizada pelo tolower()
 #include <time.h>
 #include "periodicos.h"
 #define ARQ_BINARIO "periodicos.bin"
@@ -16,13 +16,13 @@ void pausaLinux () {
 
 int main(){
 
-  char opcao='w', enderecoCSV[30],issntxt[10];
+  char opcao='w', enderecoCSV[30], issntxt[10];
   int issn;
-  tavl indice;
+  tavl avlIndice;
   periodico p;
 
-  criar(&indice);
-  carregaIndice(ARQ_BINARIO, &indice);
+  criar(&avlIndice);
+  carregaIndice(ARQ_BINARIO, &avlIndice);
 
   for (;;) {
     while (!strchr("ipacxelofts", opcao)) {
@@ -52,18 +52,18 @@ int main(){
         case 'i': {
             printf("Favor informar o endereço do arquivo CSV: ");
             scanf("%s",enderecoCSV);
-            importarCSV (enderecoCSV,ARQ_BINARIO,&indice,ARQ_LOG);
+            importarCSV (enderecoCSV,ARQ_BINARIO,&avlIndice,ARQ_LOG);
             getchar();
             pausaLinux ();
             break;
         }
         case 'p': {
-            printIndice(indice, ARQ_EXPORT_INDICE, ARQ_BINARIO);
+            printIndice(avlIndice, ARQ_EXPORT_INDICE, ARQ_BINARIO);
             pausaLinux ();
             break;
         }
         case 'a': {
-            getPeriodicoManual (&indice, ARQ_BINARIO, ARQ_LOG);
+            getPeriodicoManual (&avlIndice, ARQ_BINARIO, ARQ_LOG);
             getchar();
             pausaLinux ();
             break;
@@ -72,7 +72,7 @@ int main(){
             printf("Favor informar um ISSN que deseja CONSULTAR na base: ");
             scanf("%s",issntxt);
             issn = validaISSN(issntxt, ARQ_LOG);
-            p = consultaPeriodico(indice,ARQ_BINARIO,issn);
+            p = consultaPeriodico(avlIndice,ARQ_BINARIO,issn);
             if (p.issn) {
               imprimePeriodico(p);
             }else{
@@ -86,8 +86,8 @@ int main(){
           printf("Favor informar um ISSN que deseja REMOVER da base: ");
           scanf("%s",issntxt);
           issn = validaISSN(issntxt, ARQ_LOG);
-          if (busca (indice, issn)) {
-            removerBalanceado(&indice, issn);
+          if (busca (avlIndice, issn)) {
+            removerBalanceado(&avlIndice, issn);
             printf("Valor %d REMOVIDO com sucesso!!!\n",issn);
           }else{
             printf("ISSN não pode ser removido: Não existente na base!\n");
@@ -97,32 +97,32 @@ int main(){
           break;
         }
         case 'e': {
-            esvaziar(&indice);
+            esvaziar(&avlIndice);
             printf("Todos os periódicos eliminados com sucesso!!!!\n");
             pausaLinux ();
             remove(ARQ_LOG);
             break;
         }
         case 'f': {
-            vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibirArvore(indice);
+            vazia(avlIndice) ? printf("Tabela de índice vazia!!!\n") : exibirArvore(avlIndice);
             pausaLinux ();
             break;
         }
         case 'l': {
-            listar(ARQ_BINARIO,indice);
+            listar(ARQ_BINARIO,avlIndice);
             pausaLinux ();
             break;
         }
         case 'o': {
-            otimizar(ARQ_BINARIO,indice);
+            otimizar(ARQ_BINARIO,avlIndice);
             printf("Arquivo otimizado fisicamento com sucesso!!!!\n");
             pausaLinux ();
             break;
         }
         case 't': {
-            if(!vazia(indice)) {
-              printf("Altura lado esquerdo: %d\n",altura(indice->esq));
-              printf("Altura lado direito: %d\n",altura(indice->dir));
+            if(!vazia(avlIndice)) {
+              printf("Altura lado esquerdo: %d\n",altura(avlIndice->esq));
+              printf("Altura lado direito: %d\n",altura(avlIndice->dir));
             }else{
               printf("Indice Vazio\n");
             }
@@ -130,7 +130,7 @@ int main(){
             break;
         }
         case 's': {
-            otimizar(ARQ_BINARIO,indice);
+            otimizar(ARQ_BINARIO,avlIndice);
             remove(ARQ_LOG);
             remove(ARQ_EXPORT_INDICE);
             return 0;
