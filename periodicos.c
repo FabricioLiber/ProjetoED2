@@ -205,7 +205,7 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
     }
     printf("Números de períodicos importados: %d\n", i);
     printf("Números de períodicos com falha na importação: %d\n", j-1-i);
-    printf("Arquivo de log do sistema em: log.txt\n");    
+    printf("Arquivo de log do sistema em: log.txt\n");
     fclose(import);
   }
 }

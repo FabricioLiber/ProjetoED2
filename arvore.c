@@ -32,14 +32,15 @@ tavl busca(tavl T, telem dado){
 }
 
 void imprimirEspacos(int x){
-	for (int i = 0; i < x; ++i){
+    int i;
+	for (i = 0; i < x; ++i){
 		printf(" ");
 	}
 }
 
 int numeroDeEspacos(int x){
-	int j = 1;
-	for (int i = 0; i < x; ++i){
+	int i, j = 1;
+	for (i = 0; i < x; ++i){
 		j = j*2;
 	}
 	j--;
@@ -50,8 +51,8 @@ int pw(int x, int y){
 	if(y == 0){
 		return 1;
 	}
-	int r = 1;
-	for (int i = 0; i < y; ++i){
+	int i, r = 1;
+	for (i = 0; i < y; ++i){
 		r = r * x;
 	}
 	return r;
@@ -87,7 +88,7 @@ void exibirArvore(tavl T){
 		printf("Árvore vazia\n");
 		return;
 	}
-    int i;
+    int i, j, k;
     int height = altura(T);
     for(i = 0; i < height; i++){
     	int n = numeroDeEspacos(height-i);
@@ -96,9 +97,9 @@ void exibirArvore(tavl T){
     	printf(" ");
         printf("\n");
 
-        for (int j = 0; j < t; j++){
+        for (j = 0; j < t; j++){
         	int pw1 = pw(2,i);
-        	for (int k = 0; k < pw1; ++k){
+        	for (k = 0; k < pw1; ++k){
 	        	imprimirEspacos(n-j-1);
 	        	printf("/");
 	        	imprimirEspacos(j);
