@@ -13,6 +13,15 @@ int vazia (tavl T){
   return (T == NULL);
 }
 
+void exibirOrdemCrescente (tavl T){
+
+  if (T != NULL) {
+    exibirOrdemCrescente (T->esq);
+    printf("%d ",T->info);
+    exibirOrdemCrescente (T->dir);
+  }
+}
+
 tavl busca(tavl T, telem dado){
   if (T == NULL) return NULL;
   if (T->info == dado) return T;
@@ -20,14 +29,6 @@ tavl busca(tavl T, telem dado){
     return busca(T->esq, dado);
   else
     return busca(T->dir, dado);
-}
-
-void exibir (tavl T){
-  if (T != NULL) {
-    exibir (T->esq);
-    printf("|       %10.d  |               %d             |\n",T->info, T->endereco);
-    exibir (T->dir);
-  }
 }
 
 void imprimirEspacos(int x){
@@ -323,7 +324,15 @@ void BalancRemove (tavl *T) {
 }
 
 void removerBalanceado (tavl *T, int valor) {
-  remover(&(*T),valor);
-  balRemove(&(*T));
-  BalancRemove (&(*T));
+  tavl aux;
+
+  if((*T)->esq == NULL && (*T)->dir == NULL){
+    tavl aux = (*T);
+    (*T) = NULL;
+    free(aux);
+  }else {
+    remover(&(*T),valor);
+    balRemove(&(*T));
+    BalancRemove (&(*T));
+  }
 }
