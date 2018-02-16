@@ -70,13 +70,15 @@ void imprimePeriodico (periodico p){
 void listar(char *arquivo, tavl indice){
   periodico p;
   FILE *arq;
-  arq = fopen(arquivo,"r");
-  if (arq) {
+
+  if (!vazia(indice)) {
+    arq = fopen(arquivo,"r");
     rewind(arq);
     while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
       if (busca (indice, p.issn)) {
         imprimePeriodico(p);
       }
+    fclose(arq);
     }
   }else {
     printf("Arquivo vazio\n");
@@ -185,11 +187,10 @@ void carregaIndice (char *arquivo, tavl *indice){
 }
 
 void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog) {
-  //http://www.hardware.com.br/comunidade/delimitadores-string/1101216/
   FILE *import;
-  char r[300]="", issn[10]="", titulo[200]="", estrato[50]="", delimitador[2]=";";
+  char r[300]="", issn[10]="", titulo[200]="", estrato[50]="", delimitador=',';
   char *pointer;
-  int issnValido,j=0,i=0;
+  int issnValido,j=0,i=0,ind;
   periodico p;
   clock_t tempo[2]; //utilizado para calcular o tempo de execução da função
     //adaptado de https://www.clubedohardware.com.br/forums/topic/1031279-resolvido-medir-tempo-de-execu%C3%A7%C3%A3o-em-c/
@@ -197,48 +198,35 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
   import = fopen(enderecoCSV,"r");
 
   if (import) {
-    printf("Favor informar o delimitador utilizado no arquivo (ex: ; ou , ou /)");
-    scanf("%1s",delimitador);
-    scanf("%*[^\n]");
+    fflush(stdin);
+    printf("Favor informar o delimitador utilizado no arquivo (ex: ; ou , ou /) ");
+    scanf("%c",&delimitador);
     tempo[0] = clock();//utilizado para calcular o tempo de execução da função
     printf("Aguarde um momento enquanto a ferramenta finaliza, isso pode demorar um pouco...\n");
-    while(fgets(r, 300, import)!= NULL) {
-      if(!strchr(r,'"')){
-        pointer = strtok(r,delimitador);
-        strcpy(issn,pointer);
-        issnValido = validaISSN(issn,arquivolog);
-        if (issnValido) {
-          p.issn = issnValido;
-          pointer = strtok(NULL,delimitador);
-          strcpy(titulo,pointer);
-          validaTitulo(titulo);
-          strcpy(p.titulo,titulo);
-          pointer = strtok(NULL,"\n");
-          strcpy(estrato,pointer);
-          if (validaEstrato(p.issn,estrato,arquivolog)){
-            strcpy(p.estrato,estrato);
-            pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
-          }
+    fgets(r, 300, import)!= NULL;
+    ind=strrchr(r,'N')-r+1;
+
+    if(r[ind]==delimitador) {
+           while(fgets(r, 300, import)!= NULL) {
+            quebraStringComDelimitador (r,issn,titulo,estrato,delimitador);
+            issnValido = validaISSN(issn,arquivolog);
+            if (issnValido) {
+              p.issn = issnValido;
+              validaTitulo(titulo);
+              strcpy(p.titulo,titulo);
+              if (validaEstrato(p.issn,estrato,arquivolog)){
+                strcpy(p.estrato,estrato);
+                pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
+              }else j++;
+            }else j++;
         }
-      }else {
-        excecaoString(r,issn,titulo,estrato);
-        issnValido = validaISSN(issn,arquivolog);
-        if (issnValido) {
-          p.issn = issnValido;
-          validaTitulo(titulo);
-          strcpy(p.titulo,titulo);
-          if (validaEstrato(p.issn,estrato,arquivolog)){
-            strcpy(p.estrato,estrato);
-            pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
-          }
-        }
-      }
-      j++;
+    }else {
+        printf("Delimitador não é igual ao do arquivo\n;");
     }
     tempo[1]=clock();
     printf("Tempo gasto: %g s.\n", tempoExecucao(tempo));
     printf("Números de períodicos importados: %d\n", i);
-    printf("Números de períodicos com falha na importação: %d\n", j-1-i);
+    printf("Números de períodicos com falha na importação: %d\n", j);
     printf("Arquivo de log do sistema em: log.txt\n");
     fclose(import);
   }else{
@@ -350,6 +338,7 @@ void validaTitulo (char *titulo) {
   int indice;
   char temp[TAM]="";
 
+  strupr(titulo);
   if (strlen(titulo)>TAM-1) {
     strncpy(temp,titulo,41);
     strcat(temp," .trunc");
@@ -362,7 +351,8 @@ int validaEstrato (int issn, char *estrato, char* arquivolog) {
   char hora[25]="";
   horaagora(hora);
 
-  if (strlen(estrato)>3) {
+  strupr(estrato);
+  if (strlen(estrato)>2) {
     arq=fopen(arquivolog,"a+");
     fprintf(arq,"%s ",hora);
     fprintf(arq,"ISSN %d não importado, estrato inválido\n",issn);
@@ -384,24 +374,27 @@ void horaagora (char* hora) {
   strcpy(hora,asctime(timeinfo));
 }
 
-void excecaoString (char *string, char *issn, char *titulo, char* estrato) {
+void quebraStringComDelimitador (char *str, char *issn, char *titulo, char* estrato, char delimitador) {
   int i,j,indice,tam;
 
-  tam = strlen(string);
-  indice= strrchr(string,'"')-string;
-  for (i=indice+2,j=0;i<=tam;i++,j++) {
-    estrato[j]=string[i];
+  tam = strlen(str);
+  indice = strrchr(str,delimitador)-str;
+  for (i=indice+1,j=0;i<=tam;i++,j++) {
+    estrato[j]=str[i];
   }
-  estrato[j] = '\0';
-  string[indice+1] = '\0';
-  tam = strlen(string);
-  indice= strchr(string,'"')-string;
-  for (i=indice,j=0;i<=tam;i++,j++) {
-    titulo[j]=string[i];
+  tam = strlen(estrato);
+  estrato[tam-1] = '\0';
+  str[indice] = '\0';
+
+  tam = strlen(str);
+  indice= strchr(str,delimitador)-str;
+  for (i=indice+1,j=0;i<=tam;i++,j++) {
+    titulo[j]=str[i];
   }
   titulo[j] = '\0';
-  string[indice-1] = '\0';
-  strcpy(issn,string);
+  str[indice] = '\0';
+
+  strcpy(issn,str);
 }
 
 double tempoExecucao (clock_t tempo[]) {

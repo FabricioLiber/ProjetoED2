@@ -22,5 +22,5 @@ void converteStringIssn (int issn, char * issntxt);
 void validaTitulo (char *titulo);
 int validaEstrato (int issn,char *estrato, char* arquivolog);
 void horaagora(char* hora);
-void excecaoString (char *string, char *issn, char *titulo, char* estrato);
+void quebraStringComDelimitador (char *str, char *issn, char *titulo, char* estrato, char delimitador);
 double tempoExecucao (clock_t temp[]);
