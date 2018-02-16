@@ -7,8 +7,8 @@ typedef struct {
     char estrato[3]; /* Estrato: A1, A2, B1, B2, B3, B4, B5, C */
 } periodico;
 
-void exibir (tavl T, char *arquivotxt,char *arquivobin);
-int printIndice (tavl indice, char *arquivotxt, char *arquivobin);
+void exibir (tavl T, char *arquivotxt,char *arquivobin,char tipo);
+int printIndice (tavl indice, char *arquivotxt, char *arquivobin,char tipo);
 int pushPeriodico (tavl *indice, char *arquivo, periodico p, char *arquivolog);
 int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog);
 void imprimePeriodico (periodico p);
@@ -23,3 +23,4 @@ void validaTitulo (char *titulo);
 int validaEstrato (int issn,char *estrato, char* arquivolog);
 void horaagora(char* hora);
 void excecaoString (char *string, char *issn, char *titulo, char* estrato);
+double tempoExecucao (clock_t temp[]);

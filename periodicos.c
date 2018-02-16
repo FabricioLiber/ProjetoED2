@@ -5,36 +5,54 @@
 #include <time.h>
 #include "periodicos.h"
 
-void exibir (tavl T, char *arquivotxt, char *arquivobin){
+void exibir (tavl T, char *arquivotxt, char *arquivobin,char tipo){
   FILE *arq;
   char issntxt2[10]="";
   periodico p;
 
   if (T != NULL) {
-    exibir (T->esq, arquivotxt, arquivobin);
+    exibir (T->esq, arquivotxt, arquivobin,tipo);
+
     arq=fopen(arquivotxt,"a+");
-    p = consultaPeriodico (T,arquivobin,T->info);
-    converteStringIssn(T->info,issntxt2);
-    fprintf(arq,"|     %s         |    %s    | %s |\n",issntxt2, p.titulo,p.estrato);
+    if(tipo=='a') {
+      p = consultaPeriodico (T,arquivobin,T->info);
+      converteStringIssn(T->info,issntxt2);
+      fprintf(arq,"|     %s         | %50s | %s |\n",issntxt2, p.titulo,p.estrato);
+    }
+    if (tipo=='b') {
+      converteStringIssn(T->info,issntxt2);
+      fprintf(arq,"| %s | %8ld |\n",issntxt2,T->endereco);
+    }
     fclose(arq);
-    exibir (T->dir, arquivotxt, arquivobin);
+
+    exibir (T->dir, arquivotxt, arquivobin,tipo);
   }
 }
 
-int printIndice (tavl indice, char *arquivotxt, char *arquivobin) {
+int printIndice (tavl indice, char *arquivotxt, char *arquivobin,char tipo) {
   FILE *arq;
 
   otimizar(arquivobin,indice);//para que o arquivo fisico condiza com o indice que sera impresso
   arq=fopen(arquivotxt,"w+");
 
-  fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
-  fprintf(arq,"|                    .::Tabela de índice::.                             |\n");
-  fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
-  fprintf(arq,"|       ISSN            |          TÍTULO             |    ESTRATO      |\n");
-  fprintf(arq,"+-----+--------+--------+-----+--------+--------+-----+--------+--------+\n");
+
+  if(tipo=='a') {
+    fprintf(arq,"+-----+--------+--------+--------------+--------+--------+-----+----------+-------+\n");
+    fprintf(arq,"|                             .::Tabela de índice::.                              |\n");
+    fprintf(arq,"+-----+--------+--------+--------------+--------+--------+-----+----------+-------+\n");
+    fprintf(arq,"|       ISSN            |                    TÍTULO                       |ESTRATO|\n");
+    fprintf(arq,"+-----+--------+--------+--------------+--------+--------+-----+----------+-------+\n");
+  }
+  if(tipo=='b') {
+    fprintf(arq,"+----------+-----------+\n");
+    fprintf(arq,"|.::Tabela de índice::.|\n");
+    fprintf(arq,"+----------+-----------+\n");
+    fprintf(arq,"|   ISSN   |  ENDEREÇO |\n");
+    fprintf(arq,"+----------+-----------+\n");
+  }
 
   fclose(arq);
-  exibir(indice,arquivotxt,arquivobin);
+  exibir(indice,arquivotxt,arquivobin,tipo);
   printf("Arquivo de índice salvo em %s\n",arquivotxt);
 }
 
@@ -111,7 +129,13 @@ int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog) {
     validaTitulo(temp);
     strcpy(p.titulo,temp);
     printf("Favor informar o estrato desse períodico que deseja acrescentar na base: ");
-    scanf("%s",p.estrato);
+    scanf("%s",temp);
+    if (validaEstrato(p.issn,temp,arquivolog)) {
+      strcpy(p.estrato,temp);
+    }else{
+      printf("ISSN %d não importado, estrato inválido\n",issn);
+      return 0;
+    }
     if (pushPeriodico (indice, arquivo,p,arquivolog)){
       printf("Gravacao do ISSN %d realizada com sucesso!\n", p.issn);
       return 1;
@@ -161,27 +185,35 @@ void carregaIndice (char *arquivo, tavl *indice){
 }
 
 void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog) {
+  //http://www.hardware.com.br/comunidade/delimitadores-string/1101216/
   FILE *import;
-  char r[300]="", issn[10]="", titulo[200]="", estrato[50]="";
+  char r[300]="", issn[10]="", titulo[200]="", estrato[50]="", delimitador[2]=";";
   char *pointer;
   int issnValido,j=0,i=0;
   periodico p;
+  clock_t tempo[2]; //utilizado para calcular o tempo de execução da função
+    //adaptado de https://www.clubedohardware.com.br/forums/topic/1031279-resolvido-medir-tempo-de-execu%C3%A7%C3%A3o-em-c/
 
   import = fopen(enderecoCSV,"r");
 
   if (import) {
+    printf("Favor informar o delimitador utilizado no arquivo (ex: ; ou , ou /)");
+    scanf("%1s",delimitador);
+    scanf("%*[^\n]");
+    tempo[0] = clock();//utilizado para calcular o tempo de execução da função
+    printf("Aguarde um momento enquanto a ferramenta finaliza, isso pode demorar um pouco...\n");
     while(fgets(r, 300, import)!= NULL) {
       if(!strchr(r,'"')){
-        pointer = strtok(r,",");
+        pointer = strtok(r,delimitador);
         strcpy(issn,pointer);
         issnValido = validaISSN(issn,arquivolog);
         if (issnValido) {
           p.issn = issnValido;
-          pointer = strtok(NULL,",");
+          pointer = strtok(NULL,delimitador);
           strcpy(titulo,pointer);
           validaTitulo(titulo);
           strcpy(p.titulo,titulo);
-          pointer = strtok(NULL,",");
+          pointer = strtok(NULL,"\n");
           strcpy(estrato,pointer);
           if (validaEstrato(p.issn,estrato,arquivolog)){
             strcpy(p.estrato,estrato);
@@ -203,10 +235,15 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
       }
       j++;
     }
+    tempo[1]=clock();
+    printf("Tempo gasto: %g s.\n", tempoExecucao(tempo));
     printf("Números de períodicos importados: %d\n", i);
     printf("Números de períodicos com falha na importação: %d\n", j-1-i);
     printf("Arquivo de log do sistema em: log.txt\n");
     fclose(import);
+  }else{
+    printf("Não foi possível abrir o arquivo, favor verificar se o nome/endereço do arquivo está correto\n");
+    printf("Recomendamos que o arquivo esteja na mesma pasta do programa para apenas colocar o nome do arquivo.\n");
   }
 }
 
@@ -264,10 +301,25 @@ int validaISSN (char *issn, char* arquivolog) {
   }
 }
 
-void converteStringIssn (int issn, char * issntxt){
+void converteStringIssn (int issn, char *issntxt){
 //adaptado - https://pt.stackoverflow.com/questions/260415/convertendo-int-em-string
+//http://www.cplusplus.com/reference/cstdio/sprintf/
+  int i,temp;
+  char stemp[10]="";
 
-    char temp;
+  temp = issn;
+  strcpy(stemp,issntxt);
+
+  sprintf(stemp,"%08d",temp);
+
+  for(i=10;i>3;i--) {
+    stemp[i] = stemp[i-1];
+  }
+  stemp[4] = '-';
+  strcpy(issntxt,stemp);
+
+
+    /*char temp;
     int i =0;
     while (issn > 0) {
         int digito = issn % 10;
@@ -291,14 +343,14 @@ void converteStringIssn (int issn, char * issntxt){
    for(i;i>j;i--) {
      issntxt[i] = issntxt[i-1];
    }
-   issntxt[j] = '-';
+   issntxt[j] = '-';*/
 }
 
 void validaTitulo (char *titulo) {
   int indice;
   char temp[TAM]="";
 
-  if (strlen(titulo)>TAM) {
+  if (strlen(titulo)>TAM-1) {
     strncpy(temp,titulo,41);
     strcat(temp," .trunc");
     strcpy(titulo,temp);
@@ -350,4 +402,12 @@ void excecaoString (char *string, char *issn, char *titulo, char* estrato) {
   titulo[j] = '\0';
   string[indice-1] = '\0';
   strcpy(issn,string);
+}
+
+double tempoExecucao (clock_t tempo[]) {
+  double tempoTotal;
+
+  tempoTotal = (tempo[1]-tempo[0])/CLOCKS_PER_SEC;
+
+  return tempoTotal;
 }

@@ -28,7 +28,7 @@ int main(){
     while (!strchr("ipacxelofts", opcao)) {
              printf("\e[H\e[2J");
              system("cls");
-             printf("Indexação de periódicos v1.0\n");
+             printf("Indexação de periódicos v1.1\n");
              printf("=====================================\n");
              printf("(i) Importar arquivo CSV\n");
              printf("(p) Exportar tabela de índice\n");
@@ -58,9 +58,18 @@ int main(){
             break;
         }
         case 'p': {
-            printIndice(indice, ARQ_EXPORT_INDICE, ARQ_BINARIO);
-            pausaLinux ();
-            break;
+          printf("Favor informar uma opção de visualização desejada:\n");
+          printf("(a) Relatorio com ISSN | TITULO | ESTRATO\n");
+          printf("(b) Relatorio com ISSN | ENDEREÇO NO ARQUIVO\n");
+            while (!strchr("ab", opcao)) {
+                     printf("Favor informar uma opcao valida:[ ]\b\b");
+                     scanf("%[^\n]d",&opcao);
+                     getchar();
+                     opcao = tolower(opcao);
+                 }
+          printIndice(indice, ARQ_EXPORT_INDICE, ARQ_BINARIO,opcao);
+          pausaLinux ();
+          break;
         }
         case 'a': {
             getPeriodicoManual (&indice, ARQ_BINARIO, ARQ_LOG);

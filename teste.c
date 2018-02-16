@@ -1,13 +1,22 @@
 #include <stdio.h>
 #include <time.h>
 
-int time ()
-{
-  time_t rawtime;
-  struct tm * timeinfo;
+int main(int argc, char const *argv[]) {
+  int i, issn = 12345678,temp;
+  char issntxt[10] ="";
 
-  time ( &rawtime );
-  timeinfo = localtime ( &rawtime );
+  temp = issn;
+  sprintf(issntxt,"%d",issn);
 
-  return asctime(timeinfo);
+  for(i=10;i>3;i--) {
+    issntxt[i] = issntxt[i-1];
+  }
+  issntxt[4] = '-';
+
+  printf("%s\n",issntxt );
+  printf("%d\n",issn);
+  printf("%d\n",temp);
+
+
+  return 0;
 }
