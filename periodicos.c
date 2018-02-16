@@ -199,6 +199,7 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
 
   if (import) {
     fflush(stdin);
+    __fpurge(stdin);
     printf("Favor informar o delimitador utilizado no arquivo (ex: ; ou , ou /) ");
     scanf("%c",&delimitador);
     tempo[0] = clock();//utilizado para calcular o tempo de execução da função
@@ -290,8 +291,8 @@ int validaISSN (char *issn, char* arquivolog) {
 }
 
 void converteStringIssn (int issn, char *issntxt){
-//adaptado - https://pt.stackoverflow.com/questions/260415/convertendo-int-em-string
-//http://www.cplusplus.com/reference/cstdio/sprintf/
+  //adaptado - https://pt.stackoverflow.com/questions/260415/convertendo-int-em-string
+  //http://www.cplusplus.com/reference/cstdio/sprintf/
   int i,temp;
   char stemp[10]="";
 
@@ -338,7 +339,7 @@ void validaTitulo (char *titulo) {
   int indice;
   char temp[TAM]="";
 
-  strupr(titulo);
+  //strupr(titulo);
   if (strlen(titulo)>TAM-1) {
     strncpy(temp,titulo,41);
     strcat(temp," .trunc");
@@ -351,7 +352,7 @@ int validaEstrato (int issn, char *estrato, char* arquivolog) {
   char hora[25]="";
   horaagora(hora);
 
-  strupr(estrato);
+  //strupr(estrato);
   if (strlen(estrato)>2) {
     arq=fopen(arquivolog,"a+");
     fprintf(arq,"%s ",hora);
@@ -364,7 +365,7 @@ int validaEstrato (int issn, char *estrato, char* arquivolog) {
 }
 
 void horaagora (char* hora) {
-//adptado de - https://pt.stackoverflow.com/questions/158195/como-pegar-hora-do-sistema-e-guardar-em-uma-vari%C3%A1vel
+ //adptado de - https://pt.stackoverflow.com/questions/158195/como-pegar-hora-do-sistema-e-guardar-em-uma-vari%C3%A1vel
   time_t rawtime;
   struct tm * timeinfo;
 
