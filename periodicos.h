@@ -24,3 +24,4 @@ int validaEstrato (int issn,char *estrato, char* arquivolog);
 void horaagora(char* hora);
 void excecaoString (char *string, char *issn, char *titulo, char* estrato);
 double tempoExecucao (clock_t temp[]);
+char *strupr(char *str);

@@ -25,10 +25,10 @@ int main(){
   carregaIndice(ARQ_BINARIO, &indice);
 
   for (;;) {
-    while (!strchr("ipacxelofts", opcao)) {
+    while (!strchr("ipacxelqofts", opcao)) {
              printf("\e[H\e[2J");
              system("cls");
-             printf("Indexação de periódicos v1.1\n");
+             printf("Indexação de periódicos v1.2\n");
              printf("=====================================\n");
              printf("(i) Importar arquivo CSV\n");
              printf("(p) Exportar tabela de índice\n");
@@ -37,6 +37,7 @@ int main(){
              printf("(x) Excluir um períodico\n");
              printf("(e) Eliminar todos os períodos\n");
              printf("(l) Listar Dados\n");
+             printf("(q) Exibir quantidade de periódicos salvos no arquivo\n");
              printf("(o) Otimizar espaço em disco\n");
              printf("(f) Exibir Árvore do índice\n");
              printf("(t) Exibir Altura da Árvore do índice\n");
@@ -113,12 +114,21 @@ int main(){
             break;
         }
         case 'f': {
-            vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibirArvore(indice);
+            if(altura(indice)<=5) {
+              vazia(indice) ? printf("Tabela de índice vazia!!!\n") : exibirArvore(indice);
+            }else{
+              printf("Ferramenta não recomendada para altura de árvore superior a 5!!!\n");
+            }
             pausaLinux ();
             break;
         }
         case 'l': {
             listar(ARQ_BINARIO,indice);
+            pausaLinux ();
+            break;
+        }
+        case 'q': {
+            printf("Existem %d periódicos salvos nesse momento!\n", quantidadeNos(indice));
             pausaLinux ();
             break;
         }

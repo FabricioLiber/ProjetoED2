@@ -130,7 +130,7 @@ int getPeriodicoManual (tavl *indice, char *arquivo, char* arquivolog) {
     strcpy(p.titulo,temp);
     printf("Favor informar o estrato desse períodico que deseja acrescentar na base: ");
     scanf("%s",temp);
-    if (validaEstrato(p.issn,temp,arquivolog)) {
+    if ((strlen(temp)<3)&&validaEstrato(p.issn,temp,arquivolog)) {
       strcpy(p.estrato,temp);
     }else{
       printf("ISSN %d não importado, estrato inválido\n",issn);
@@ -215,6 +215,7 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
           strcpy(p.titulo,titulo);
           pointer = strtok(NULL,"\n");
           strcpy(estrato,pointer);
+          //printf("[0]-%c/[1]-%c/[2]-%c/[3]-%c\n", estrato[0],estrato[1],estrato[2],estrato[3]);
           if (validaEstrato(p.issn,estrato,arquivolog)){
             strcpy(p.estrato,estrato);
             pushPeriodico(indice,arquivo,p,arquivolog) ? i++:j++;
@@ -236,7 +237,7 @@ void importarCSV(char *enderecoCSV, char *arquivo,tavl *indice, char* arquivolog
       j++;
     }
     tempo[1]=clock();
-    printf("Tempo gasto: %g s.\n", tempoExecucao(tempo));
+    printf("Tempo de processamento: %g s.\n", tempoExecucao(tempo));
     printf("Números de períodicos importados: %d\n", i);
     printf("Números de períodicos com falha na importação: %d\n", j-1-i);
     printf("Arquivo de log do sistema em: log.txt\n");
@@ -302,8 +303,8 @@ int validaISSN (char *issn, char* arquivolog) {
 }
 
 void converteStringIssn (int issn, char *issntxt){
-//adaptado - https://pt.stackoverflow.com/questions/260415/convertendo-int-em-string
-//http://www.cplusplus.com/reference/cstdio/sprintf/
+  //adaptado - https://pt.stackoverflow.com/questions/260415/convertendo-int-em-string
+  //http://www.cplusplus.com/reference/cstdio/sprintf/
   int i,temp;
   char stemp[10]="";
 
@@ -374,7 +375,7 @@ int validaEstrato (int issn, char *estrato, char* arquivolog) {
 }
 
 void horaagora (char* hora) {
-//adptado de - https://pt.stackoverflow.com/questions/158195/como-pegar-hora-do-sistema-e-guardar-em-uma-vari%C3%A1vel
+  //adptado de - https://pt.stackoverflow.com/questions/158195/como-pegar-hora-do-sistema-e-guardar-em-uma-vari%C3%A1vel
   time_t rawtime;
   struct tm * timeinfo;
 
@@ -410,4 +411,15 @@ double tempoExecucao (clock_t tempo[]) {
   tempoTotal = (tempo[1]-tempo[0])/CLOCKS_PER_SEC;
 
   return tempoTotal;
+}
+
+char *strupr(char *str) {
+  unsigned char *p = (unsigned char *)str;
+
+  while (*p) {
+     *p = toupper(*p);
+      p++;
+  }
+
+  return str;
 }

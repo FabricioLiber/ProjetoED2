@@ -13,6 +13,15 @@ int vazia (tavl T){
   return (T == NULL);
 }
 
+int quantidadeNos (tavl T) {
+
+    if(T == NULL)
+        return 0;
+   else
+        return quantidadeNos(T->esq) +1+ quantidadeNos(T->dir);
+}
+
+
 void exibirOrdemCrescente (tavl T){
 
   if (T != NULL) {
