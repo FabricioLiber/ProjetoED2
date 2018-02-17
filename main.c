@@ -134,7 +134,6 @@ int main(){
         }
         case 'o': {
             otimizar(ARQ_BINARIO,indice);
-            printf("Arquivo otimizado fisicamento com sucesso!!!!\n");
             pausaLinux ();
             break;
         }

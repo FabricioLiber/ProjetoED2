@@ -173,8 +173,7 @@ void otimizar(char *arquivo, tavl indice){
       fclose(arq);
       remove(arquivo);
       rename(arquivoTemp,arquivo);
-    }else {
-        perror("Erro na abertura do arquivo:");
+      printf("Arquivo otimizado fisicamento com sucesso!!!!\n");
     }
 }
 
