@@ -73,18 +73,18 @@ void listar(char *arquivo, tavl indice){
   arq = fopen(arquivo,"r");
   if (arq) {
     rewind(arq);
-    while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
+    while(  fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
       if (busca (indice, p.issn)) {
         imprimePeriodico(p);
       }
     }
+    fclose(arq);
   }else {
     printf("Arquivo vazio\n");
   }
 }
 
 int pushPeriodico (tavl *indice, char *arquivo, periodico p, char* arquivolog) {
-  int arquivoInexistente = 1;
   long int endereco;
   FILE* arq;
   char hora[25]="";
@@ -92,14 +92,12 @@ int pushPeriodico (tavl *indice, char *arquivo, periodico p, char* arquivolog) {
 
   if (!busca (*indice, p.issn)) {
     if((arq=fopen(arquivo,"ab+"))==NULL){
-        arquivoInexistente = 0;
         if((arq=fopen(arquivo,"wb+"))==NULL){
             perror("Erro na abertura do arquivo:");
             return 0;
         }
     }
-    if( arquivoInexistente ){
-          if( fwrite(&p, sizeof(p), 1, arq) )
+    if( fwrite(&p, sizeof(p), 1, arq) ) {
     inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
     fclose(arq);
     //(arquivo,*indice);
@@ -154,19 +152,29 @@ void otimizar(char *arquivo, tavl indice){
     periodico p;
     char arquivoTemp[10] = "temp.bin";
     FILE *arq,*arqTemp;
-    arq = fopen(arquivo,"r");
+
+    if((arq=fopen(arquivo,"r"))==NULL){
+        perror("Erro na abertura do arquivo:");
+        }
 
     if (arq) {
+      rewind(arq);
       while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
           if (busca (indice, p.issn)) {
-            arqTemp = fopen(arquivoTemp,"ab+");
-            fwrite(&p, sizeof(p), 1, arqTemp);
+            if((arqTemp=fopen(arquivoTemp,"ab+"))==NULL){
+              if((arqTemp=fopen(arquivoTemp,"wb+"))==NULL){
+                perror("Erro na abertura do arquivo:");
+               }
+            }
+            fwrite(&p, sizeof(periodico), 1, arqTemp);
             fclose(arqTemp);
           }
       }
       fclose(arq);
       remove(arquivo);
       rename(arquivoTemp,arquivo);
+    }else {
+        perror("Erro na abertura do arquivo:");
     }
 }
 
@@ -181,6 +189,7 @@ void carregaIndice (char *arquivo, tavl *indice){
       while( fread(&p, sizeof(periodico),1,arq) == 1) { // Acesso sequencial às estruturas
         inserir(indice, p.issn, (endereco = ftell(arq))-sizeof(p));
       }
+      fclose(arq);
     }
 }
 
@@ -363,6 +372,7 @@ int validaEstrato (int issn, char *estrato, char* arquivolog) {
   char hora[25]="";
   horaagora(hora);
 
+  strupr(estrato);
   if (strlen(estrato)>3) {
     arq=fopen(arquivolog,"a+");
     fprintf(arq,"%s ",hora);
